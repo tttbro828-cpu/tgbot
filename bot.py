@@ -286,8 +286,13 @@ def get_level(exp: int) -> int:
 def ensure_user(user_id: int, username: str = None):
     user = sql.execute("SELECT * FROM users WHERE user_id = ?", (user_id,)).fetchone()
     if not user:
+        # СОЗДАЕМ ПОЛЬЗОВАТЕЛЯ СО ВСЕМИ ПОЛЯМИ ПО УМОЛЧАНИЮ
         sql.execute(
-            "INSERT INTO users (user_id, username) VALUES (?, ?)",
+            """INSERT INTO users 
+               (user_id, username, coins, exp, weapon, location, last_hunt, 
+                daily_kills, total_kills, current_title, prestige, 
+                achievement_streak, achievements_completed) 
+               VALUES (?, ?, 0, 0, 'Револьвер', 'Тайга', 0, 0, 0, '', 0, 0, '{}')""",
             (user_id, username)
         )
         sql.execute(
