@@ -10,7 +10,7 @@ from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, C
 from aiogram.filters import Command
 
 # ================== НАСТРОЙКИ ==================
-TOKEN = "7960395324:AAHdKfvfDlcyPQSMLASinEY-fdaEz5-WMUA"
+TOKEN = "8537764396:AAEZFTs7mgHqTjQbDh6eSyKtQJvwlPnJazY"
 HUNT_COOLDOWN = 240  # 4 минуты
 EXP_PER_LEVEL = 500
 ADMIN_ID = 6924481166  # Ваш ID
@@ -2536,3 +2536,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
