@@ -2,6 +2,7 @@ import asyncio
 import random
 import time
 import sqlite3
+import threading
 from datetime import datetime
 
 from aiogram import Bot, Dispatcher
@@ -9,64 +10,65 @@ from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, C
 from aiogram.filters import Command
 
 # ================== НАСТРОЙКИ ==================
-TOKEN = "8537764396:AAEZFTs7mgHqTjQbDh6eSyKtQJvwlPnJazY"
+TOKEN = "7960395324:AAHdKfvfDlcyPQSMLASinEY-fdaEz5-WMUA"
 HUNT_COOLDOWN = 240  # 4 минуты
 EXP_PER_LEVEL = 500
 ADMIN_ID = 6924481166  # Ваш ID
+ADMIN_USERNAME = "DeepSleep01"  # Ваш username
 
 # ================== ДАННЫЕ ==================
 LOCATIONS = {
     "Тайга": {"level": 0, "animals": {
-        "Мелкая дичь": ["Заяц", "Белка", "Бурундук", "Рябчик", "Выдра", "Ласка", "Горностай"],
-        "Средние": ["Бобр", "Глухарь", "Северный олень", "Косуля"],
-        "Опасные": ["Кабан", "Рысь", "Росомаха", "Серый волк", "Бурый медведь"],
-        "Тяжелые": ["Лось"],
-        "Титаны": ["Оборотень"]
+        "Мелочь": ["Заяц", "Белка", "Бурундук", "Рябчик", "Выдра", "Ласка", "Горностай"],
+        "Средн": ["Бобр", "Глухарь", "Северный олень", "Косуля"],
+        "Опасн": ["Кабан", "Рысь", "Росомаха", "Серый волк", "Бурый медведь"],
+        "Тяжел": ["Лось"],
+        "Титан": ["Оборотень"]
     }},
     "Саванна": {"level": 10, "animals": {
-        "Мелкая дичь": ["Дикобраз", "Мангуст", "Сурикат", "Антилоповый заяц"],
-        "Средние": ["Зебра", "Шакал", "Антилопа Гну", "Антилопа Импала", "Страус", "Бородавочник", "Сервал"],
-        "Опасные": ["Гиена", "Пума", "Лев"],
-        "Тяжелые": ["Жираф", "Буйвол", "Слон"],
-        "Титаны": ["Гротсланг"]
+        "Мелочь": ["Дикобраз", "Мангуст", "Сурикат", "Антилоп заяц"],
+        "Средн": ["Зебра", "Шакал", "Антилопа Гну", "Антил Импала", "Страус", "Бородавочник", "Сервал"],
+        "Опасн": ["Гиена", "Пума", "Лев"],
+        "Тяжел": ["Жираф", "Буйвол", "Слон"],
+        "Титан": ["Гротсланг"]
     }},
     "Арктика": {"level": 25, "animals": {
-        "Мелкая дичь": ["Лемминг", "Песец", "Арктический заяц"],
-        "Средние": ["Полярная сова", "Тюлень", "Северный олень (Карибу)"],
-        "Опасные": ["Снежный барс", "Белый медведь"],
-        "Тяжелые": ["Морж", "Белуха", "Овцебык", "Косатка"],
-        "Титаны": ["Мамонт", "Йети"]
+        "Мелочь": ["Лемминг", "Песец", "Арктик заяц"],
+        "Средн": ["Полярн сова", "Тюлень", "Карибу"],
+        "Опасн": ["Снежн барс", "Белый медведь"],
+        "Тяжел": ["Морж", "Белуха", "Овцебык", "Косатка"],
+        "Титан": ["Мамонт", "Йети"]
     }},
     "Джунгли": {"level": 50, "animals": {
-        "Мелкая дичь": ["Капибара", "Ленивец"],
-        "Средние": ["Окапи", "Обезьяна", "Казуар", "Тапир"],
-        "Опасные": ["Комодский варан", "Крокодил", "Анаконда", "Ягуар", "Горилла", "Тигр", "Пантера"],
-        "Тяжелые": ["Носорог"],
-        "Титаны": ["Чупакабра"]
+        "Мелочь": ["Капибара", "Ленивец"],
+        "Средн": ["Окапи", "Обезьяна", "Казуар", "Тапир"],
+        "Опасн": ["Комодский варан", "Крокодил", "Анаконда", "Ягуар", "Горилла", "Тигр", "Пантера"],
+        "Тяжел": ["Носорог"],
+        "Титан": ["Чупакабра"]
     }},
     "Древний мир": {"level": 80, "animals": {
-        "Мелкая дичь": ["Компсогнат", "Иберомезорнис", "Археоптерикс"],
-        "Средние": ["Велоцираптор", "Динопитек"],
-        "Опасные": ["Смилодон", "Энтелодонт", "Келенкен", "Гиенодон"],
-        "Тяжелые": ["Трицератопс", "Стегозавр", "Гадрозавр", "Эласмотерии", "Магелания", "Шерстистый носорог"],
-        "Титаны": ["Тираннозавр", "Брахиозавр", "Птеродактиль"]
+        "Мелочь": ["Компсогнат", "Иберомез", "Археопт"],
+        "Средн": ["Велоцираптор", "Динопитек"],
+        "Опасн": ["Смилодон", "Энтелодонт", "Келенкен", "Гиенодон"],
+        "Тяжел": ["Трицератопс", "Стегоз", "Гадрозавр", "Эласмотерии", "Магелания", "Шерст носорог"],
+        "Титан": ["Тираннозавр", "Брахиозавр", "Птеродактиль"]
     }},
 }
 
 SEARCH_CHANCES = {
-    "Мелкая дичь": 60,
-    "Средние": 45,
-    "Опасные": 20,
-    "Тяжелые": 5,
-    "Титаны": 1
+    "Мелочь": 60,
+    "Средн": 45,
+    "Опасн": 20,
+    "Тяжел": 5,
+    "Титан": 1
 }
 
 REWARDS = {
-    "Мелкая дичь": (30, 50),
-    "Средние": (140, 250),
-    "Опасные": (600, 1000),
-    "Тяжелые": (4000, 3000),
-    "Титаны": (20000, 10000)
+    "Мелочь": (30, 50),
+    "Средн": (140, 250),
+    "Опасн": (600, 1000),
+    "Тяжел": (4000, 3000),
+    "Титан": (20000, 10000)
 }
 
 WEAPONS = {
@@ -94,22 +96,22 @@ EQUIPMENT = {
     "Приманка": {
         "price": 500,
         "description": "+5% к поиску опасных животных",
-        "bonus": {"Опасные": 5}
+        "bonus": {"Опасн": 5}
     },
     "Маскировка": {
         "price": 2000,
         "description": "+5% к поиску опасных и +5% к поиску тяжелых животных",
-        "bonus": {"Опасные": 5, "Тяжелые": 5}
+        "bonus": {"Опасн": 5, "Тяжел": 5}
     },
     "Локатор": {
         "price": 10000,
         "description": "+10% к поиску опасных, +5% к поиску тяжелых и +3% к поиску титанов",
-        "bonus": {"Опасные": 10, "Тяжелые": 5, "Титаны": 3}
+        "bonus": {"Опасн": 10, "Тяжел": 5, "Титан": 3}
     },
     "Продвинутый искатель": {
         "price": 150000,
         "description": "100% шанс найти хотя бы одно животное",
-        "bonus": {"Мелкая дичь": 100, "Средние": 100, "Опасные": 100, "Тяжелые": 100, "Титаны": 100}
+        "bonus": {"Мелочь": 100, "Средн": 100, "Опасн": 100, "Тяжел": 100, "Титан": 100}
     },
     # НОВЫЕ ПРЕДМЕТЫ
     "Базовый рюкзак": {
@@ -143,9 +145,9 @@ BUFFS = {
     }
 }
 
-# ================== ФРАЗЫ КОНТРАТАК ==================
+# ================== ФРАЗЫ КОНТРАТАК (ИСПРАВЛЕННЫЕ) ==================
 CONTRATTACK_PHRASES = {
-    "Опасные": [
+    "Опасн": [
         "Кабан яростно бросается на вас! -25HP",
         "Рысь царапает когтями! -25HP", 
         "Волк впивается в руку! -25HP",
@@ -153,37 +155,91 @@ CONTRATTACK_PHRASES = {
         "Медведь наносит сокрушительный удар! -25HP",
         "Гиена хватает за ногу! -25HP",
         "Пума прыгает на вас! -25HP",
-        "Ягуар нападает из засады! -25HP"
+        "Ягуар нападает из засады! -25HP",
+        "Тигр набрасывается на вас! -25HP",
+        "Горилла бьет кулаком! -25HP"
     ],
-    "Тяжелые": [
+    "Тяжел": [
         "Слон поднимает вас хоботом и бросает! -50HP",
         "Носорог пробивает брешь в защите! -50HP", 
         "Буйвол топчет копытами! -50HP",
         "Жираф бьёт мощной шеей! -50HP",
         "Морж атакует клыками! -50HP",
         "Белуха выпрыгивает из воды! -50HP",
-        "Овцебык таранит вас! -50HP"
+        "Овцебык таранит вас! -50HP",
+        "Лось бьет рогами! -50HP",
+        "Трицератопс атакует! -50HP",
+        "Стегозавр ударяет хвостом! -50HP"
     ],
-    "Титаны": [
+    "Титан": [
         "Тираннозавр хватает вас в пасть! -100HP",
         "Мамонт сминает под собой! -100HP", 
         "Йети разрывает на части! -100HP",
         "Оборотень впивается клыками в горло! -100HP",
         "Брахиозавр наступает на вас! -100HP",
         "Птеродактиль хватает и бросает с высоты! -100HP",
-        "Чупакабра высасывает всю кровь! -100HP"
-        "Гротсланг обвивает вас своим змеиным телом и с хрустом сдавливает! ! -100HP"
+        "Чупакабра высасывает всю кровь! -100HP",
+        "Гротсланг обвивает вас своим змеиным телом и с хрустом сдавливает! -100HP"
     ]
 }
 
 CONTRATTACK_DAMAGE = {
-    "Опасные": 25,
-    "Тяжелые": 50, 
-    "Титаны": 100
+    "Опасн": 25,
+    "Тяжел": 50, 
+    "Титан": 100
 }
 
-# ================== НОВЫЕ ДОСТИЖЕНИЯ ==================
-NEW_ACHIEVEMENTS = {
+# ================== ДОСТИЖЕНИЯ (ИСПРАВЛЕННЫЕ) ==================
+ACHIEVEMENTS = {
+    "Зайчья шкура": {
+        "description": "Убить 20 зайцев",
+        "reward_coins": 500,
+        "reward_exp": 1000,
+        "title": "🐇 Зайцелов",
+        "condition_type": "animal_kills",
+        "condition_value": ("Заяц", 20)
+    },
+    "Титановый бог": {
+        "description": "Убить 3 титана",
+        "reward_coins": 10000,
+        "reward_exp": 5000,
+        "title": "👑 Убийца титанов",
+        "condition_type": "titan_kills",
+        "condition_value": 3
+    },
+    "Богач": {
+        "description": "Накопить 50,000 монет",
+        "reward_coins": 10000,
+        "reward_exp": 0,
+        "title": "💰 Богач",
+        "condition_type": "coins",
+        "condition_value": 50000
+    },
+    "Полярный рейнджер": {
+        "description": "Убить 30 арктических животных",
+        "reward_coins": 5000,
+        "reward_exp": 3000,
+        "title": "❄️ Полярный рейнджер",
+        "condition_type": "location_kills",
+        "condition_value": ("Арктика", 30)
+    },
+    "Коллекционер": {
+        "description": "Убить 40 разных видов животных",
+        "reward_coins": 8000,
+        "reward_exp": 0,
+        "title": "📚 Коллекционер",
+        "condition_type": "unique_animals",
+        "condition_value": 40
+    },
+    "Снайпер": {
+        "description": "10 успешных выстрелов подряд без промаха",
+        "reward_coins": 3000,
+        "reward_exp": 0,
+        "title": "🔫 Меткий стрелок",
+        "condition_type": "streak",
+        "condition_value": 10
+    },
+    # Новые достижения
     "💪 Здоровяк": {
         "description": "Иметь 250 максимального HP",
         "reward_coins": 5000,
@@ -233,61 +289,6 @@ NEW_ACHIEVEMENTS = {
         "condition_value": 30
     }
 }
-
-# Объединяем старые и новые достижения
-ACHIEVEMENTS = {
-    "Зайчья шкура": {
-        "description": "Убить 20 зайцев",
-        "reward_coins": 500,
-        "reward_exp": 1000,
-        "title": "🐇 Зайцелов",
-        "condition_type": "animal_kills",
-        "condition_value": ("Заяц", 20)
-    },
-    "Титановый бог": {
-        "description": "Убить 3 титана",
-        "reward_coins": 10000,
-        "reward_exp": 5000,
-        "title": "👑 Убийца титанов",
-        "condition_type": "titan_kills",
-        "condition_value": 3
-    },
-    "Богач": {
-        "description": "Накопить 50,000 монет",
-        "reward_coins": 10000,
-        "reward_exp": 0,
-        "title": "💰 Богач",
-        "condition_type": "coins",
-        "condition_value": 50000
-    },
-    "Полярный рейнджер": {
-        "description": "Убить 30 арктических животных",
-        "reward_coins": 5000,
-        "reward_exp": 3000,
-        "title": "❄️ Полярный рейнджер",
-        "condition_type": "location_kills",
-        "condition_value": ("Арктика", 30)
-    },
-    "Коллекционер": {
-        "description": "Убить 40 разных видов животных",
-        "reward_coins": 8000,
-        "reward_exp": 0,
-        "title": "📚 Коллекционер",
-        "condition_type": "unique_animals",
-        "condition_value": 40
-    },
-    "Снайпер": {
-        "description": "10 успешных выстрелов подряд без промаха",
-        "reward_coins": 3000,
-        "reward_exp": 0,
-        "title": "🔫 Меткий стрелок",
-        "condition_type": "streak",
-        "condition_value": 10
-    }
-}
-
-# Добавляем новые достижения
-ACHIEVEMENTS.update(NEW_ACHIEVEMENTS)
 
 # ================== ОСТАЛЬНЫЕ СИСТЕМЫ ==================
 RANKS = {
@@ -343,7 +344,8 @@ CREATE TABLE IF NOT EXISTS users (
     trap_days_streak INTEGER DEFAULT 0,
     last_trap_use INTEGER DEFAULT 0,
     traps_used INTEGER DEFAULT 0,
-    heavy_traps INTEGER DEFAULT 0
+    heavy_traps INTEGER DEFAULT 0,
+    last_achievement_check INTEGER DEFAULT 0
 )
 """)
 
@@ -385,39 +387,65 @@ CREATE TABLE IF NOT EXISTS stats_daily (
 )
 """)
 
-# Функция для обновления структуры БД при необходимости
-def update_database():
-    """Обновляет структуру базы данных при необходимости"""
-    columns_to_add = [
-        ("daily_kills", "INTEGER DEFAULT 0"),
-        ("total_kills", "INTEGER DEFAULT 0"),
-        ("username", "TEXT"),
-        ("current_title", "TEXT DEFAULT ''"),
-        ("prestige", "INTEGER DEFAULT 0"),
-        ("achievement_streak", "INTEGER DEFAULT 0"),
-        ("achievements_completed", "TEXT DEFAULT '{}'"),
-        ("health", "INTEGER DEFAULT 100"),
-        ("max_health", "INTEGER DEFAULT 100"),
-        ("deaths", "INTEGER DEFAULT 0"),
-        ("counterattack_streak", "INTEGER DEFAULT 0"),
-        ("titan_escape_streak", "INTEGER DEFAULT 0"),
-        ("trap_days_streak", "INTEGER DEFAULT 0"),
-        ("last_trap_use", "INTEGER DEFAULT 0"),
-        ("traps_used", "INTEGER DEFAULT 0"),
-        ("heavy_traps", "INTEGER DEFAULT 0")
-    ]
+# ================== АВТОМАТИЧЕСКОЕ ВОССТАНОВЛЕНИЕ HP ==================
+class HealthRegenerator:
+    """Класс для автоматического восстановления здоровья"""
     
-    for column_name, column_type in columns_to_add:
+    def __init__(self):
+        self.is_running = False
+        self.regeneration_thread = None
+    
+    def start_regeneration(self):
+        """Запуск потока восстановления здоровья"""
+        if self.is_running:
+            return
+        
+        self.is_running = True
+        self.regeneration_thread = threading.Thread(target=self._regeneration_loop, daemon=True)
+        self.regeneration_thread.start()
+        print("🩺 Автоматическое восстановление HP запущено (1 HP/минуту)")
+    
+    def stop_regeneration(self):
+        """Остановка восстановления здоровья"""
+        self.is_running = False
+        if self.regeneration_thread:
+            self.regeneration_thread.join(timeout=2)
+        print("🩺 Автоматическое восстановление HP остановлено")
+    
+    def _regeneration_loop(self):
+        """Основной цикл восстановления здоровья"""
+        while self.is_running:
+            try:
+                self._regenerate_all_players()
+                time.sleep(60)  # Ждем 1 минуту
+            except Exception as e:
+                print(f"❌ Ошибка в восстановлении HP: {e}")
+                time.sleep(60)
+    
+    def _regenerate_all_players(self):
+        """Восстановить HP всем игрокам"""
         try:
-            sql.execute(f"SELECT {column_name} FROM users LIMIT 1")
-        except sqlite3.OperationalError:
-            sql.execute(f"ALTER TABLE users ADD COLUMN {column_name} {column_type}")
-            print(f"✅ Добавлена колонка {column_name}")
-    
-    db.commit()
+            all_users = sql.execute("SELECT user_id, health, max_health FROM users").fetchall()
+            
+            for user in all_users:
+                user_id, current_hp, max_hp = user
+                
+                # Восстанавливаем 1 HP, но не больше максимума
+                if current_hp < max_hp:
+                    new_hp = current_hp + 1
+                    if new_hp > max_hp:
+                        new_hp = max_hp
+                    
+                    sql.execute("UPDATE users SET health = ? WHERE user_id = ?", (new_hp, user_id))
+            
+            db.commit()
+            
+        except Exception as e:
+            print(f"❌ Ошибка при восстановлении HP: {e}")
+            db.rollback()
 
-update_database()
-db.commit()
+# Создаем экземпляр восстановителя здоровья
+health_regenerator = HealthRegenerator()
 
 # ================== ФУНКЦИИ ==================
 def get_level(exp: int) -> int:
@@ -430,8 +458,10 @@ def ensure_user(user_id: int, username: str = None):
             """INSERT INTO users 
                (user_id, username, coins, exp, weapon, location, last_hunt, 
                 daily_kills, total_kills, current_title, prestige, 
-                achievement_streak, achievements_completed, health, max_health) 
-               VALUES (?, ?, 0, 0, 'Револьвер', 'Тайга', 0, 0, 0, '', 0, 0, '{}', 100, 100)""",
+                achievement_streak, achievements_completed, health, max_health,
+                deaths, counterattack_streak, titan_escape_streak, trap_days_streak,
+                last_trap_use, traps_used, heavy_traps, last_achievement_check) 
+               VALUES (?, ?, 0, 0, 'Револьвер', 'Тайга', 0, 0, 0, '', 0, 0, '{}', 100, 100, 0, 0, 0, 0, 0, 0, 0, 0)""",
             (user_id, username)
         )
         sql.execute(
@@ -465,9 +495,11 @@ def update_health(user_id: int, change: int):
     sql.execute("UPDATE users SET health = ? WHERE user_id = ?", (new_hp, user_id))
     db.commit()
     
+    # Если игрок умер
     if new_hp <= 0:
         sql.execute("UPDATE users SET deaths = deaths + 1 WHERE user_id = ?", (user_id,))
         db.commit()
+        print(f"💀 Игрок {user_id} умер. Текущее здоровье: 0/{max_hp}")
     
     return new_hp
 
@@ -492,8 +524,11 @@ def can_hunt(user_id: int) -> tuple:
     user = ensure_user(user_id)
     current_hp = user[13]
     
+    # ИСПРАВЛЕНИЕ: Если игрок умер (HP = 0), нужно 100 HP для охоты
     if current_hp <= 0:
-        return False, "❌ Вы слишком слабы для охоты! Нужно лечение."
+        return False, "❌ Вы слишком слабы для охоты! Необходимо восстановить 100 HP.\nИспользуйте аптечку из магазина или подождите восстановления (1 HP/минуту)."
+    elif current_hp < 100 and user[15] > 0:  # Если умирал и HP меньше 100
+        return False, f"❌ После смерти нужно восстановить 100 HP для охоты.\nВаше здоровье: {current_hp}/100\nИспользуйте аптечку или подождите восстановления."
     else:
         return True, "✅ Можно охотиться"
 
@@ -506,7 +541,7 @@ def get_user_equipment(user_id: int):
 
 def get_equipment_bonuses(user_id: int):
     equipment = get_user_equipment(user_id)
-    bonuses = {"Мелкая дичь": 0, "Средние": 0, "Опасные": 0, "Тяжелые": 0, "Титаны": 0}
+    bonuses = {"Мелочь": 0, "Средн": 0, "Опасн": 0, "Тяжел": 0, "Титан": 0}
     
     for eq_name in equipment:
         if eq_name in EQUIPMENT:
@@ -563,7 +598,7 @@ def choose_animal(location: str, user_id: int):
     return group, animal
 
 def check_hit(weapon: str, group: str):
-    groups = ["Мелкая дичь", "Средние", "Опасные", "Тяжелые", "Титаны"]
+    groups = ["Мелочь", "Средн", "Опасн", "Тяжел", "Титан"]
     if group not in groups:
         return False
     idx = groups.index(group)
@@ -589,7 +624,10 @@ def get_user_rank(total_kills: int):
 def get_completed_achievements(user_id: int):
     result = sql.execute("SELECT achievements_completed FROM users WHERE user_id = ?", (user_id,)).fetchone()
     if result and result[0]:
-        return eval(result[0])
+        try:
+            return eval(result[0])
+        except:
+            return {}
     return {}
 
 def check_prestige_requirements(user_id: int, prestige_level: int):
@@ -617,7 +655,7 @@ def check_prestige_requirements(user_id: int, prestige_level: int):
     if "titans" in requirements:
         titan_animals = []
         for loc in LOCATIONS.values():
-            titan_animals.extend(loc["animals"].get("Титаны", []))
+            titan_animals.extend(loc["animals"].get("Титан", []))
         titan_kills = 0
         for animal in titan_animals:
             result = sql.execute("SELECT count FROM trophies WHERE user_id = ? AND animal = ?", (user_id, animal)).fetchone()
@@ -648,19 +686,19 @@ def use_traps(user_id: int):
     for _ in range(animal_count):
         rand = random.randint(1, 100)
         if rand <= 50:
-            group = "Мелкая дичь"
+            group = "Мелочь"
         elif rand <= 90:
-            group = "Средние"
+            group = "Средн"
         elif rand <= 98:
-            group = "Опасные"
+            group = "Опасн"
         else:
-            group = "Тяжелые"
+            group = "Тяжел"
         
         if group in LOCATIONS[location]["animals"] and LOCATIONS[location]["animals"][group]:
             animal = random.choice(LOCATIONS[location]["animals"][group])
             caught_animals.append((group, animal))
             
-            if group == "Тяжелые":
+            if group == "Тяжел":
                 sql.execute("UPDATE users SET heavy_traps = heavy_traps + 1 WHERE user_id = ?", (user_id,))
     
     sql.execute("UPDATE users SET last_trap_use = ?, traps_used = traps_used + 1, trap_days_streak = trap_days_streak + 1 WHERE user_id = ?", 
@@ -669,16 +707,142 @@ def use_traps(user_id: int):
     
     return True, caught_animals
 
+# ================== СИСТЕМА ДОСТИЖЕНИЙ (ИСПРАВЛЕННАЯ) ==================
+def check_achievements(user_id: int):
+    """Проверить и выдать достижения игроку"""
+    user = ensure_user(user_id)
+    completed = get_completed_achievements(user_id)
+    new_achievements = []
+    
+    # Получаем текущие данные игрока
+    coins = user[1]
+    exp = user[2]
+    total_kills = user[7]
+    current_hp, max_hp = get_user_health(user_id)
+    deaths = user[15] if len(user) > 15 else 0
+    counterattack_streak = user[16] if len(user) > 16 else 0
+    titan_escape_streak = user[17] if len(user) > 17 else 0
+    trap_days_streak = user[18] if len(user) > 18 else 0
+    heavy_traps = user[21] if len(user) > 21 else 0
+    achievement_streak = user[11] if len(user) > 11 else 0
+    
+    # Проверяем все достижения
+    for achievement_name, achievement_data in ACHIEVEMENTS.items():
+        if achievement_name in completed:
+            continue
+            
+        condition_met = False
+        
+        if achievement_data["condition_type"] == "animal_kills":
+            animal_name, required_count = achievement_data["condition_value"]
+            result = sql.execute("SELECT count FROM trophies WHERE user_id = ? AND animal = ?", (user_id, animal_name)).fetchone()
+            if result and result[0] >= required_count:
+                condition_met = True
+                
+        elif achievement_data["condition_type"] == "titan_kills":
+            titan_animals = []
+            for loc in LOCATIONS.values():
+                titan_animals.extend(loc["animals"].get("Титан", []))
+            titan_kills = 0
+            for animal in titan_animals:
+                result = sql.execute("SELECT count FROM trophies WHERE user_id = ? AND animal = ?", (user_id, animal)).fetchone()
+                if result:
+                    titan_kills += result[0]
+            if titan_kills >= achievement_data["condition_value"]:
+                condition_met = True
+                
+        elif achievement_data["condition_type"] == "coins":
+            if coins >= achievement_data["condition_value"]:
+                condition_met = True
+                
+        elif achievement_data["condition_type"] == "location_kills":
+            location_name, required_count = achievement_data["condition_value"]
+            # Получаем всех животных из этой локации
+            location_animals = []
+            for group, animals in LOCATIONS[location_name]["animals"].items():
+                location_animals.extend(animals)
+            
+            location_kills = 0
+            for animal in location_animals:
+                result = sql.execute("SELECT count FROM trophies WHERE user_id = ? AND animal = ?", (user_id, animal)).fetchone()
+                if result:
+                    location_kills += result[0]
+            if location_kills >= required_count:
+                condition_met = True
+                
+        elif achievement_data["condition_type"] == "unique_animals":
+            unique_count = len(sql.execute("SELECT COUNT(DISTINCT animal) FROM trophies WHERE user_id = ?", (user_id,)).fetchone())
+            if unique_count >= achievement_data["condition_value"]:
+                condition_met = True
+                
+        elif achievement_data["condition_type"] == "streak":
+            if achievement_streak >= achievement_data["condition_value"]:
+                condition_met = True
+                
+        elif achievement_data["condition_type"] == "max_health":
+            if max_hp >= achievement_data["condition_value"]:
+                condition_met = True
+                
+        elif achievement_data["condition_type"] == "counterattack_streak":
+            if counterattack_streak >= achievement_data["condition_value"]:
+                condition_met = True
+                
+        elif achievement_data["condition_type"] == "titan_escape_streak":
+            if titan_escape_streak >= achievement_data["condition_value"]:
+                condition_met = True
+                
+        elif achievement_data["condition_type"] == "deaths":
+            if deaths >= achievement_data["condition_value"]:
+                condition_met = True
+                
+        elif achievement_data["condition_type"] == "trap_heavy":
+            if heavy_traps >= achievement_data["condition_value"]:
+                condition_met = True
+                
+        elif achievement_data["condition_type"] == "trap_days_streak":
+            if trap_days_streak >= achievement_data["condition_value"]:
+                condition_met = True
+        
+        # Если условие выполнено, выдаем достижение
+        if condition_met:
+            # Добавляем в список выполненных
+            completed[achievement_name] = {
+                "completed_at": int(time.time()),
+                "reward_coins": achievement_data["reward_coins"],
+                "reward_exp": achievement_data["reward_exp"],
+                "title": achievement_data["title"]
+            }
+            
+            # Выдаем награды
+            sql.execute("UPDATE users SET coins = coins + ?, exp = exp + ? WHERE user_id = ?", 
+                       (achievement_data["reward_coins"], achievement_data["reward_exp"], user_id))
+            
+            new_achievements.append(achievement_name)
+    
+    # Обновляем список выполненных достижений
+    if new_achievements:
+        sql.execute("UPDATE users SET achievements_completed = ? WHERE user_id = ?", 
+                   (str(completed), user_id))
+        sql.execute("UPDATE users SET last_achievement_check = ? WHERE user_id = ?", 
+                   (int(time.time()), user_id))
+        db.commit()
+    
+    return new_achievements
+
 # ================== БОТ ==================
 bot = Bot(TOKEN)
 dp = Dispatcher()
 
-# ================== АДМИН КОМАНДЫ ==================
-ADMIN_USERNAME = "DeepSleep01"
-
-@dp.message(lambda msg: msg.text and msg.text.startswith("дипскип") and msg.from_user.username == ADMIN_USERNAME)
+# ================== АДМИН КОМАНДЫ (ИСПРАВЛЕННЫЕ) ==================
+@dp.message(lambda msg: msg.text and msg.text.startswith("дипскип"))
 async def admin_skip(msg: Message):
+    """Сбросить таймер охоты для игрока"""
     try:
+        # Проверяем права доступа
+        if msg.from_user.id != ADMIN_ID and msg.from_user.username != ADMIN_USERNAME:
+            await msg.answer("❌ У вас нет прав для использования этой команды")
+            return
+            
         parts = msg.text.split()
         if len(parts) >= 2 and "@" in parts[1]:
             username = parts[1].replace("@", "").strip()
@@ -687,6 +851,7 @@ async def admin_skip(msg: Message):
                 sql.execute("UPDATE users SET last_hunt = 0 WHERE user_id = ?", (user[0],))
                 db.commit()
                 await msg.answer(f"✅ Таймер сброшен для @{username}")
+                print(f"🔧 Админ {msg.from_user.id} сбросил таймер для @{username}")
             else:
                 await msg.answer(f"❌ Пользователь @{username} не найден в базе")
         else:
@@ -694,9 +859,15 @@ async def admin_skip(msg: Message):
     except Exception as e:
         await msg.answer(f"❌ Ошибка: {str(e)}")
 
-@dp.message(lambda msg: msg.text and msg.text.startswith("дипмонеты") and msg.from_user.username == ADMIN_USERNAME)
+@dp.message(lambda msg: msg.text and msg.text.startswith("дипмонеты"))
 async def admin_coins(msg: Message):
+    """Выдать монеты игроку"""
     try:
+        # Проверяем права доступа
+        if msg.from_user.id != ADMIN_ID and msg.from_user.username != ADMIN_USERNAME:
+            await msg.answer("❌ У вас нет прав для использования этой команды")
+            return
+            
         parts = msg.text.split()
         if len(parts) >= 3 and "@" in parts[2]:
             amount = int(parts[1])
@@ -706,16 +877,25 @@ async def admin_coins(msg: Message):
                 sql.execute("UPDATE users SET coins = coins + ? WHERE user_id = ?", (amount, user[0]))
                 db.commit()
                 await msg.answer(f"✅ Выдано {amount} монет пользователю @{username}")
+                print(f"🔧 Админ {msg.from_user.id} выдал {amount} монет @{username}")
             else:
                 await msg.answer(f"❌ Пользователь @{username} не найден в базе")
         else:
             await msg.answer("❌ Используйте: дипмонеты 100 @username\nПример: дипмонеты 500 @player123")
+    except ValueError:
+        await msg.answer("❌ Ошибка: количество монет должно быть числом")
     except Exception as e:
         await msg.answer(f"❌ Ошибка: {str(e)}")
 
-@dp.message(lambda msg: msg.text and msg.text.startswith("дипопыт") and msg.from_user.username == ADMIN_USERNAME)
+@dp.message(lambda msg: msg.text and msg.text.startswith("дипопыт"))
 async def admin_exp(msg: Message):
+    """Выдать опыт игроку"""
     try:
+        # Проверяем права доступа
+        if msg.from_user.id != ADMIN_ID and msg.from_user.username != ADMIN_USERNAME:
+            await msg.answer("❌ У вас нет прав для использования этой команды")
+            return
+            
         parts = msg.text.split()
         if len(parts) >= 3 and "@" in parts[2]:
             amount = int(parts[1])
@@ -725,16 +905,25 @@ async def admin_exp(msg: Message):
                 sql.execute("UPDATE users SET exp = exp + ? WHERE user_id = ?", (amount, user[0]))
                 db.commit()
                 await msg.answer(f"✅ Выдано {amount} опыта пользователю @{username}")
+                print(f"🔧 Админ {msg.from_user.id} выдал {amount} опыта @{username}")
             else:
                 await msg.answer(f"❌ Пользователь @{username} не найден в базе")
         else:
             await msg.answer("❌ Используйте: дипопыт 500 @username\nПример: дипопыт 1000 @player123")
+    except ValueError:
+        await msg.answer("❌ Ошибка: количество опыта должно быть числом")
     except Exception as e:
         await msg.answer(f"❌ Ошибка: {str(e)}")
 
-@dp.message(lambda msg: msg.text and msg.text.startswith("дипуровни") and msg.from_user.username == ADMIN_USERNAME)
+@dp.message(lambda msg: msg.text and msg.text.startswith("дипуровни"))
 async def admin_level(msg: Message):
+    """Выдать уровни игроку"""
     try:
+        # Проверяем права доступа
+        if msg.from_user.id != ADMIN_ID and msg.from_user.username != ADMIN_USERNAME:
+            await msg.answer("❌ У вас нет прав для использования этой команды")
+            return
+            
         parts = msg.text.split()
         if len(parts) >= 3 and "@" in parts[2]:
             levels = int(parts[1])
@@ -745,39 +934,61 @@ async def admin_level(msg: Message):
                 sql.execute("UPDATE users SET exp = exp + ? WHERE user_id = ?", (exp_needed, user[0]))
                 db.commit()
                 await msg.answer(f"✅ Выдано {levels} уровней ({exp_needed} опыта) пользователю @{username}")
+                print(f"🔧 Админ {msg.from_user.id} выдал {levels} уровней @{username}")
             else:
                 await msg.answer(f"❌ Пользователь @{username} не найден в базе")
         else:
             await msg.answer("❌ Используйте: дипуровни 5 @username\nПример: дипуровни 3 @player123")
+    except ValueError:
+        await msg.answer("❌ Ошибка: количество уровней должно быть числом")
     except Exception as e:
         await msg.answer(f"❌ Ошибка: {str(e)}")
 
-# НОВЫЕ АДМИН КОМАНДЫ
-@dp.message(lambda msg: msg.text and msg.text.startswith("дипзд") and msg.from_user.id == ADMIN_ID)
+@dp.message(lambda msg: msg.text and msg.text.startswith("дипзд"))
 async def admin_hp(msg: Message):
     """Установить здоровье игроку"""
     try:
+        # Проверяем права доступа
+        if msg.from_user.id != ADMIN_ID and msg.from_user.username != ADMIN_USERNAME:
+            await msg.answer("❌ У вас нет прав для использования этой команды")
+            return
+            
         parts = msg.text.split()
         if len(parts) >= 3 and "@" in parts[2]:
             hp_amount = int(parts[1])
             username = parts[2].replace("@", "").strip()
             user = sql.execute("SELECT user_id FROM users WHERE username = ?", (username,)).fetchone()
             if user:
-                sql.execute("UPDATE users SET health = ?, max_health = ? WHERE user_id = ?", 
-                          (hp_amount, hp_amount, user[0]))
+                # Получаем текущее максимальное здоровье
+                max_hp_result = sql.execute("SELECT max_health FROM users WHERE user_id = ?", (user[0],)).fetchone()
+                max_hp = max_hp_result[0] if max_hp_result else 100
+                
+                # Проверяем, чтобы HP не превышало максимальное
+                if hp_amount > max_hp:
+                    hp_amount = max_hp
+                
+                sql.execute("UPDATE users SET health = ? WHERE user_id = ?", (hp_amount, user[0]))
                 db.commit()
                 await msg.answer(f"✅ Установлено {hp_amount} HP для @{username}")
+                print(f"🔧 Админ {msg.from_user.id} установил {hp_amount} HP для @{username}")
             else:
                 await msg.answer(f"❌ Пользователь @{username} не найден в базе")
         else:
-            await msg.answer("❌ Используйте: дипзд 500 @username\nПример: дипзд 1000 @player123")
+            await msg.answer("❌ Используйте: дипзд <количество_HP> @username\nПример: дипзд 1000 @player123")
+    except ValueError:
+        await msg.answer("❌ Ошибка: количество HP должно быть числом")
     except Exception as e:
         await msg.answer(f"❌ Ошибка: {str(e)}")
 
-@dp.message(lambda msg: msg.text and msg.text.startswith("дипноль") and msg.from_user.id == ADMIN_ID)
+@dp.message(lambda msg: msg.text and msg.text.startswith("дипноль"))
 async def admin_reset(msg: Message):
     """Полный сброс профиля игрока"""
     try:
+        # Проверяем права доступа
+        if msg.from_user.id != ADMIN_ID and msg.from_user.username != ADMIN_USERNAME:
+            await msg.answer("❌ У вас нет прав для использования этой команды")
+            return
+            
         parts = msg.text.split()
         if len(parts) >= 2 and "@" in parts[1]:
             username = parts[1].replace("@", "").strip()
@@ -785,6 +996,7 @@ async def admin_reset(msg: Message):
             if user:
                 user_id = user[0]
                 
+                # Сброс всех данных пользователя
                 sql.execute("""
                     UPDATE users SET 
                     coins = 0, exp = 0, weapon = 'Револьвер', location = 'Тайга',
@@ -792,10 +1004,11 @@ async def admin_reset(msg: Message):
                     prestige = 0, achievement_streak = 0, achievements_completed = '{}',
                     health = 100, max_health = 100, deaths = 0, counterattack_streak = 0,
                     titan_escape_streak = 0, trap_days_streak = 0, last_trap_use = 0,
-                    traps_used = 0, heavy_traps = 0
+                    traps_used = 0, heavy_traps = 0, last_achievement_check = 0
                     WHERE user_id = ?
                 """, (user_id,))
                 
+                # Удаление всех связанных данных
                 sql.execute("DELETE FROM trophies WHERE user_id = ?", (user_id,))
                 sql.execute("DELETE FROM user_equipment WHERE user_id = ?", (user_id,))
                 sql.execute("DELETE FROM user_weapons WHERE user_id = ? AND weapon != 'Револьвер'", (user_id,))
@@ -803,6 +1016,7 @@ async def admin_reset(msg: Message):
                 
                 db.commit()
                 await msg.answer(f"✅ Профиль @{username} полностью сброшен!")
+                print(f"🔧 Админ {msg.from_user.id} сбросил профиль @{username}")
             else:
                 await msg.answer(f"❌ Пользователь @{username} не найден в базе")
         else:
@@ -810,11 +1024,53 @@ async def admin_reset(msg: Message):
     except Exception as e:
         await msg.answer(f"❌ Ошибка: {str(e)}")
 
+# ================== НОВАЯ КОМАНДА ДЛЯ ПРОВЕРКИ ВОССТАНОВЛЕНИЯ ==================
+@dp.message(lambda msg: msg.text and msg.text.lower() == "состояние")
+async def health_status(msg: Message):
+    """Показать состояние здоровья и информацию о восстановлении"""
+    user = ensure_user(msg.from_user.id, msg.from_user.username)
+    current_hp, max_hp = get_user_health(msg.from_user.id)
+    deaths = user[15] if len(user) > 15 else 0
+    
+    status_text = f"❤️ Ваше здоровье: {current_hp}/{max_hp}\n"
+    
+    if current_hp <= 0:
+        status_text += f"💀 Вы мертвы! Необходимо восстановить 100 HP для охоты.\n"
+        hp_needed = 100 - current_hp
+        status_text += f"📉 Автоматическое восстановление: 1 HP в минуту\n"
+        status_text += f"🔄 До возрождения осталось: {hp_needed} минут\n\n"
+        status_text += "💡 Совет: используйте аптечку из магазина для быстрого лечения!"
+    elif current_hp < max_hp:
+        minutes_to_full = max_hp - current_hp
+        status_text += f"📈 Восстановление: 1 HP в минуту\n"
+        status_text += f"🕐 До полного восстановления: {minutes_to_full} минут\n"
+    else:
+        status_text += "✅ Вы полностью здоровы!\n"
+    
+    status_text += f"\n📊 Смертей: {deaths}"
+    status_text += f"\n⚙️ Система восстановления: {'🟢 Активна' if health_regenerator.is_running else '🔴 Неактивна'}"
+    
+    await msg.answer(status_text)
+
 # ================== /start ==================
 @dp.message(Command("start"))
 async def start(msg: Message):
     ensure_user(msg.from_user.id, msg.from_user.username)
-    await msg.answer("🏹 Добро пожаловать на охоту!\n\nКоманды:\n• Хант — начать охоту\n• Инв — посмотреть снаряжение\n• Магазин — купить оружие\n• Локации — выбрать локацию\n• Топы — таблица лидеров\n• Справка — информация о боте\n• Достижения — ваши достижения\n• Титулы — выбрать титул\n• Ловушки — использовать ловушки (раз в 24ч)")
+    await msg.answer(
+        "🏹 Добро пожаловать на охоту!\n\n"
+        "📋 Команды:\n"
+        "• Хант — начать охоту\n"
+        "• Состояние — проверить здоровье\n" 
+        "• Инв — посмотреть снаряжение\n"
+        "• Магазин — купить оружие и снаряжение\n"
+        "• Локации — выбрать локацию\n"
+        "• Топы — таблица лидеров\n"
+        "• Справка — информация о боте\n"
+        "• Достижения — ваши достижения\n"
+        "• Титулы — выбрать титул\n"
+        "• Престиж — получить престиж\n"  # ДОБАВЛЕНО ИНФОРМАЦИЯ О ПРЕСТИЖЕ
+        "• Ловушки — использовать ловушки (раз в 24ч)\n\n"
+    )
 
 # ================== СПРАВКА ==================
 @dp.message(lambda msg: msg.text and msg.text.lower() == "справка")
@@ -921,8 +1177,10 @@ async def shoot(call: CallbackQuery):
         user = ensure_user(call.from_user.id)
         current_hp, max_hp = get_user_health(call.from_user.id)
         
-        if current_hp <= 0:
-            await call.message.edit_text("❌ Вы слишком слабы для выстрела!")
+        # ИСПРАВЛЕНИЕ: Проверяем, может ли игрок охотиться
+        can_hunt_result, message = can_hunt(call.from_user.id)
+        if not can_hunt_result:
+            await call.message.edit_text(message)
             return
         
         hit_success = check_hit(user[3], group)
@@ -959,19 +1217,31 @@ async def shoot(call: CallbackQuery):
             else:
                 sql.execute("INSERT INTO trophies VALUES (?, ?, ?)", (call.from_user.id, animal, 1))
             
+            # Проверяем достижения после успешного выстрела
+            new_achievements = check_achievements(call.from_user.id)
+            achievements_text = ""
+            if new_achievements:
+                achievements_text = "\n\n🎉 Новые достижения:\n"
+                for achievement_name in new_achievements:
+                    achievements_text += f"• {achievement_name}\n"
+            
             db.commit()
             
             if animal in STICKERS and STICKERS[animal]:
                 await call.message.answer_sticker(STICKERS[animal])
             
-            await call.message.edit_text(f"🎯 Прямое попадание!\n\nТрофей: \"{animal}\"\n💰 Монеты: +{coins}\n⭐ Опыт: +{exp}")
+            result_text = f"🎯 Прямое попадание!\n\nТрофей: \"{animal}\"\n💰 Монеты: +{coins}\n⭐ Опыт: +{exp}"
+            if new_achievements:
+                result_text += achievements_text
+            
+            await call.message.edit_text(result_text)
             
         else:
             # ПРОМАХ
             sql.execute("UPDATE users SET achievement_streak = 0 WHERE user_id = ?", (call.from_user.id,))
             
-            if group in ["Опасные", "Тяжелые", "Титаны"]:
-                # КОНТРАТАКА
+            if group in ["Опасн", "Тяжел", "Титан"]:
+                # КОНТРАТАКА - ИСПРАВЛЕННЫЙ ВЫБОР ФРАЗЫ
                 damage = CONTRATTACK_DAMAGE.get(group, 0)
                 new_hp = update_health(call.from_user.id, -damage)
                 current_hp, max_hp = get_user_health(call.from_user.id)
@@ -983,15 +1253,21 @@ async def shoot(call: CallbackQuery):
                     sql.execute("UPDATE users SET counterattack_streak = 0 WHERE user_id = ?", 
                               (call.from_user.id,))
                 
+                # ИСПРАВЛЕНИЕ: Правильный выбор фразы для животного
                 phrases = CONTRATTACK_PHRASES.get(group, [])
-                attack_phrase = random.choice(phrases) if phrases else f"Животное атакует! -{damage}HP"
+                if phrases:
+                    # Выбираем случайную фразу из группы
+                    attack_phrase = random.choice(phrases)
+                else:
+                    # Если нет фраз для этой группы, создаем общую
+                    attack_phrase = f"{animal} атакует! -{damage}HP"
                 
                 if current_hp <= 0:
                     await call.message.edit_text(
                         f"{attack_phrase}\n\n"
                         f"💀 Вы погибли! Здоровье: 0/{max_hp}\n"
-                        f"Вы не можете охотиться до полного восстановления.\n"
-                        f"Используйте аптечку из магазина."
+                        f"Вы не можете охотиться до восстановления 100 HP.\n"
+                        f"Используйте аптечку из магазина или подождите восстановления (1 HP/минуту)."
                     )
                     db.commit()
                     return
@@ -999,7 +1275,7 @@ async def shoot(call: CallbackQuery):
                 # Создаем кнопки для ответа
                 hunt_data_new = f"{call.from_user.id}|{group}|{animal}|{hunt_time}"
                 
-                if group == "Титаны":
+                if group == "Титан":
                     kb = InlineKeyboardMarkup(inline_keyboard=[
                         [InlineKeyboardButton(text="⚔️ Добить (риск!)", callback_data=f"finish|{hunt_data_new}|1")],
                         [InlineKeyboardButton(text="🏃 Бежать (50% шанс)", callback_data=f"run|{hunt_data_new}")]
@@ -1051,8 +1327,10 @@ async def finish_animal(call: CallbackQuery):
         user = ensure_user(call.from_user.id)
         current_hp, max_hp = get_user_health(call.from_user.id)
         
-        if current_hp <= 0:
-            await call.message.edit_text("❌ Вы слишком слабы для выстрела!")
+        # ИСПРАВЛЕНИЕ: Проверяем, может ли игрок охотиться
+        can_hunt_result, message = can_hunt(call.from_user.id)
+        if not can_hunt_result:
+            await call.message.edit_text(message)
             return
         
         hit_success = check_hit(user[3], group)
@@ -1087,12 +1365,22 @@ async def finish_animal(call: CallbackQuery):
             else:
                 sql.execute("INSERT INTO trophies VALUES (?, ?, ?)", (call.from_user.id, animal, 1))
             
+            # Проверяем достижения
+            new_achievements = check_achievements(call.from_user.id)
+            
             db.commit()
             
             if animal in STICKERS and STICKERS[animal]:
                 await call.message.answer_sticker(STICKERS[animal])
             
-            await call.message.edit_text(f"🎯 Вы добили животное!\n\nТрофей: \"{animal}\"\n💰 Монеты: +{coins}\n⭐ Опыт: +{exp}")
+            result_text = f"🎯 Вы добили животное!\n\nТрофей: \"{animal}\"\n💰 Монеты: +{coins}\n⭐ Опыт: +{exp}"
+            if new_achievements:
+                achievements_text = "\n\n🎉 Новые достижения:\n"
+                for achievement_name in new_achievements:
+                    achievements_text += f"• {achievement_name}\n"
+                result_text += achievements_text
+            
+            await call.message.edit_text(result_text)
             
         else:
             # НОВАЯ КОНТРАТАКА
@@ -1100,21 +1388,25 @@ async def finish_animal(call: CallbackQuery):
             new_hp = update_health(call.from_user.id, -damage)
             current_hp, max_hp = get_user_health(call.from_user.id)
             
+            # ИСПРАВЛЕНИЕ: Правильный выбор фразы
             phrases = CONTRATTACK_PHRASES.get(group, [])
-            attack_phrase = random.choice(phrases) if phrases else f"Животное атакует! -{damage}HP"
+            if phrases:
+                attack_phrase = random.choice(phrases)
+            else:
+                attack_phrase = f"{animal} атакует! -{damage}HP"
             
             if current_hp <= 0:
                 await call.message.edit_text(
                     f"{attack_phrase}\n\n"
                     f"💀 Вы погибли! Здоровье: 0/{max_hp}\n"
-                    f"Вы не можете охотиться до полного восстановления."
+                    f"Вы не можете охотиться до восстановления 100 HP."
                 )
                 return
             
             try_count += 1
             hunt_data_new = f"{call.from_user.id}|{group}|{animal}|{hunt_time}"
             
-            if group == "Титаны":
+            if group == "Титан":
                 kb = InlineKeyboardMarkup(inline_keyboard=[
                     [InlineKeyboardButton(text=f"⚔️ Добить (еще риск!)", callback_data=f"finish|{hunt_data_new}|{try_count}")],
                     [InlineKeyboardButton(text="🏃 Бежать (50% шанс)", callback_data=f"run|{hunt_data_new}")]
@@ -1159,7 +1451,7 @@ async def run_from_animal(call: CallbackQuery):
         
         user = ensure_user(call.from_user.id)
         
-        if group == "Титаны":
+        if group == "Титан":
             if random.random() < 0.5:
                 # Успешный побег от титана
                 sql.execute("UPDATE users SET titan_escape_streak = titan_escape_streak + 1 WHERE user_id = ?", 
@@ -1177,7 +1469,7 @@ async def run_from_animal(call: CallbackQuery):
                     await call.message.edit_text(
                         f"💀 Титана догнал вас! Вы погибли...\n"
                         f"Здоровье: 0/{max_hp}\n"
-                        f"Вы не можете охотиться до полного восстановления."
+                        f"Вы не можете охотиться до восстановления 100 HP."
                     )
                 else:
                     await call.message.edit_text(
@@ -1211,7 +1503,7 @@ async def inventory(msg: Message):
     equipment = get_user_equipment(msg.from_user.id)
     equipment_bonuses = get_equipment_bonuses(msg.from_user.id)
     
-    groups = ["Мелкая дичь", "Средние", "Опасные", "Тяжелые", "Титаны"]
+    groups = ["Мелочь", "Средн", "Опасн", "Тяжел", "Титан"]
     grouped_trophies = {g: [] for g in groups}
     
     for animal, count in trophies:
@@ -1279,11 +1571,15 @@ async def inventory(msg: Message):
     
     await msg.answer(text)
 
-# ================== ДОСТИЖЕНИЯ ==================
+# ================== ДОСТИЖЕНИЯ (ИСПРАВЛЕННЫЕ) ==================
 @dp.message(lambda msg: msg.text and msg.text.lower() == "достижения")
 async def achievements_command(msg: Message):
     user = ensure_user(msg.from_user.id, msg.from_user.username)
     completed = get_completed_achievements(msg.from_user.id)
+    
+    # Проверяем достижения перед отображением
+    check_achievements(msg.from_user.id)
+    completed = get_completed_achievements(msg.from_user.id)  # Обновляем список
     
     text = "🏆 Ваши достижения:\n\n"
     
@@ -1292,17 +1588,66 @@ async def achievements_command(msg: Message):
         
         progress = ""
         if achievement_name not in completed:
-            if achievement_data["condition_type"] == "max_health":
+            # Получаем текущий прогресс
+            if achievement_data["condition_type"] == "animal_kills":
+                animal_name, required_count = achievement_data["condition_value"]
+                result = sql.execute("SELECT count FROM trophies WHERE user_id = ? AND animal = ?", 
+                                   (msg.from_user.id, animal_name)).fetchone()
+                current = result[0] if result else 0
+                progress = f" [{current}/{required_count}]"
+                
+            elif achievement_data["condition_type"] == "titan_kills":
+                titan_animals = []
+                for loc in LOCATIONS.values():
+                    titan_animals.extend(loc["animals"].get("Титан", []))
+                titan_kills = 0
+                for animal in titan_animals:
+                    result = sql.execute("SELECT count FROM trophies WHERE user_id = ? AND animal = ?", 
+                                       (msg.from_user.id, animal)).fetchone()
+                    if result:
+                        titan_kills += result[0]
+                progress = f" [{titan_kills}/{achievement_data['condition_value']}]"
+                
+            elif achievement_data["condition_type"] == "coins":
+                progress = f" [{user[1]}/{achievement_data['condition_value']}]"
+                
+            elif achievement_data["condition_type"] == "location_kills":
+                location_name, required_count = achievement_data["condition_value"]
+                location_animals = []
+                for group, animals in LOCATIONS[location_name]["animals"].items():
+                    location_animals.extend(animals)
+                location_kills = 0
+                for animal in location_animals:
+                    result = sql.execute("SELECT count FROM trophies WHERE user_id = ? AND animal = ?", 
+                                       (msg.from_user.id, animal)).fetchone()
+                    if result:
+                        location_kills += result[0]
+                progress = f" [{location_kills}/{required_count}]"
+                
+            elif achievement_data["condition_type"] == "unique_animals":
+                unique_count = len(sql.execute("SELECT COUNT(DISTINCT animal) FROM trophies WHERE user_id = ?", 
+                                             (msg.from_user.id,)).fetchone())
+                progress = f" [{unique_count}/{achievement_data['condition_value']}]"
+                
+            elif achievement_data["condition_type"] == "streak":
+                progress = f" [{user[11] if len(user) > 11 else 0}/{achievement_data['condition_value']}]"
+                
+            elif achievement_data["condition_type"] == "max_health":
                 current_hp, max_hp = get_user_health(msg.from_user.id)
                 progress = f" [{max_hp}/{achievement_data['condition_value']}]"
+                
             elif achievement_data["condition_type"] == "counterattack_streak":
                 progress = f" [{user[16] if len(user) > 16 else 0}/{achievement_data['condition_value']}]"
+                
             elif achievement_data["condition_type"] == "titan_escape_streak":
                 progress = f" [{user[17] if len(user) > 17 else 0}/{achievement_data['condition_value']}]"
+                
             elif achievement_data["condition_type"] == "deaths":
                 progress = f" [{user[15] if len(user) > 15 else 0}/{achievement_data['condition_value']}]"
+                
             elif achievement_data["condition_type"] == "trap_heavy":
                 progress = f" [{user[21] if len(user) > 21 else 0}/{achievement_data['condition_value']}]"
+                
             elif achievement_data["condition_type"] == "trap_days_streak":
                 progress = f" [{user[18] if len(user) > 18 else 0}/{achievement_data['condition_value']}]"
         
@@ -1371,9 +1716,8 @@ async def select_title_callback(call: CallbackQuery):
     sql.execute("UPDATE users SET current_title = ? WHERE user_id = ?", (title, call.from_user.id))
     db.commit()
     
+    # ИСПРАВЛЕНИЕ: Убираем повторный вызов titles_command, чтобы избежать двойного сообщения
     await call.message.edit_text(f"✅ Титул изменён на: {title}")
-    
-    await titles_command(call.message)
 
 @dp.callback_query(lambda c: c.data.startswith("remove_title"))
 async def remove_title_callback(call: CallbackQuery):
@@ -1392,8 +1736,6 @@ async def remove_title_callback(call: CallbackQuery):
     db.commit()
     
     await call.message.edit_text("✅ Титул снят")
-    
-    await titles_command(call.message)
 
 @dp.callback_query(lambda c: c.data == "no_action")
 async def no_action(call: CallbackQuery):
@@ -1508,6 +1850,9 @@ async def shop_weapons(call: CallbackQuery):
             text=f"{status}{weapon} — {price}💰",
             callback_data=f"buy_weapon:{call.from_user.id}:{weapon}"
         )])
+    
+    # ИСПРАВЛЕНИЕ: Добавлена кнопка "Назад" в магазин оружия
+    buttons.append([InlineKeyboardButton(text="🔙 Назад", callback_data=f"shop_back:{call.from_user.id}")])
     
     kb = InlineKeyboardMarkup(inline_keyboard=buttons)
     await call.message.edit_text(f"💰 Ваш баланс: {user[1]} монет\n\n🔫 Выберите оружие:", reply_markup=kb)
@@ -1886,8 +2231,8 @@ async def top_titans(call: CallbackQuery):
     
     titan_animals = []
     for location_name, location_data in LOCATIONS.items():
-        if "Титаны" in location_data["animals"]:
-            titan_animals.extend(location_data["animals"]["Титаны"])
+        if "Титан" in location_data["animals"]:
+            titan_animals.extend(location_data["animals"]["Титан"])
     
     if not titan_animals:
         await call.message.edit_text("🎯 В игре пока нет титанов.")
@@ -2089,11 +2434,53 @@ async def traps_command(msg: Message):
     
     sql.execute("UPDATE users SET coins = coins + ?, exp = exp + ? WHERE user_id = ?", 
                 (total_coins, total_exp, msg.from_user.id))
+    
+    # Проверяем достижения после использования ловушек
+    new_achievements = check_achievements(msg.from_user.id)
+    
     db.commit()
+    
+    if new_achievements:
+        achievements_text = "\n\n🎉 Новые достижения:\n"
+        for achievement_name in new_achievements:
+            achievements_text += f"• {achievement_name}\n"
+        animals_text += achievements_text
     
     animals_text += f"\n💰 Всего: {total_coins} монет, {total_exp} опыта"
     
     await msg.answer(animals_text)
+
+# ================== ФУНКЦИЯ ОБНОВЛЕНИЯ БД ==================
+def update_database():
+    """Обновляет структуру базы данных при необходимости"""
+    columns_to_add = [
+        ("daily_kills", "INTEGER DEFAULT 0"),
+        ("total_kills", "INTEGER DEFAULT 0"),
+        ("username", "TEXT"),
+        ("current_title", "TEXT DEFAULT ''"),
+        ("prestige", "INTEGER DEFAULT 0"),
+        ("achievement_streak", "INTEGER DEFAULT 0"),
+        ("achievements_completed", "TEXT DEFAULT '{}'"),
+        ("health", "INTEGER DEFAULT 100"),
+        ("max_health", "INTEGER DEFAULT 100"),
+        ("deaths", "INTEGER DEFAULT 0"),
+        ("counterattack_streak", "INTEGER DEFAULT 0"),
+        ("titan_escape_streak", "INTEGER DEFAULT 0"),
+        ("trap_days_streak", "INTEGER DEFAULT 0"),
+        ("last_trap_use", "INTEGER DEFAULT 0"),
+        ("traps_used", "INTEGER DEFAULT 0"),
+        ("heavy_traps", "INTEGER DEFAULT 0"),
+        ("last_achievement_check", "INTEGER DEFAULT 0")
+    ]
+    
+    for column_name, column_type in columns_to_add:
+        try:
+            sql.execute(f"SELECT {column_name} FROM users LIMIT 1")
+        except sqlite3.OperationalError:
+            sql.execute(f"ALTER TABLE users ADD COLUMN {column_name} {column_type}")
+            print(f"✅ Добавлена колонка {column_name}")
+    
+    db.commit()
 
 # ================== ЗАПУСК ==================
 async def main():
@@ -2109,11 +2496,16 @@ async def main():
     for user in all_users:
         update_max_health(user[0])
     
+    print("💖 Запуск автоматического восстановления здоровья...")
+    health_regenerator.start_regeneration()
+    
     print("🤖 Бот запущен! Ожидание сообщений...")
     print(f"👑 Админ ID: {ADMIN_ID}")
+    print(f"👑 Админ Username: @{ADMIN_USERNAME}")
     print("=" * 50)
     print("📊 Доступные команды:")
     print("• /start - Начало работы")
+    print("• Состояние - Проверить здоровье и восстановление")
     print("• Хант - Начать охоту (с кнопкой обнуления таймера за 450💰)")
     print("• Инв - Инвентарь")
     print("• Магазин - Магазин оружия и снаряжения")
@@ -2125,12 +2517,21 @@ async def main():
     print("• Ловушки - Использовать ловушки (раз в 24ч)")
     print("• Справка - Помощь")
     print("=" * 50)
+    print("🔧 Админ-команды:")
+    print("• дипзд <HP> @username - Установить здоровье")
+    print("• дипноль @username - Полный сброс профиля")
+    print("• дипскип @username - Сбросить таймер охоты")
+    print("• дипмонеты <сумма> @username - Выдать монеты")
+    print("• дипопыт <сумма> @username - Выдать опыт")
+    print("• дипуровни <уровни> @username - Выдать уровни")
+    print("=" * 50)
     
     try:
         await dp.start_polling(bot)
     except Exception as e:
         print(f"❌ Ошибка при запуске бота: {e}")
     finally:
+        health_regenerator.stop_regeneration()
         await bot.session.close()
 
 if __name__ == "__main__":
