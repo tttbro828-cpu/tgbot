@@ -143,7 +143,7 @@ EQUIPMENT = {
     },
     "Улучшенные ловушки": {
         "price": 15000,
-        "description": "5 животных вместо 3 при использовании ловшек",
+        "description": "Вы находите 5 животных вместо 3, при использовании ловушек",
         "bonus": {"traps": 5}
     },
     "Витамины": {
@@ -267,7 +267,7 @@ CONTRATTACK_DAMAGE = {
 
 # ================== ДОСТИЖЕНИЯ ==================
 ACHIEVEMENTS = {
-    "Зайчья шкура": {
+    "🐇Зайчья шкура": {
         "description": "Убить 20 зайцев",
         "reward_coins": 500,
         "reward_exp": 1000,
@@ -275,7 +275,7 @@ ACHIEVEMENTS = {
         "condition_type": "animal_kills",
         "condition_value": ("Заяц", 20)
     },
-    "Титановый бог": {
+    "💎Титановый бог": {
         "description": "Убить 3 титана",
         "reward_coins": 10000,
         "reward_exp": 5000,
@@ -283,7 +283,7 @@ ACHIEVEMENTS = {
         "condition_type": "titan_kills",
         "condition_value": 3
     },
-    "Богач": {
+    "🤑Богач": {
         "description": "Накопить 50,000 монет",
         "reward_coins": 10000,
         "reward_exp": 0,
@@ -291,7 +291,7 @@ ACHIEVEMENTS = {
         "condition_type": "coins",
         "condition_value": 50000
     },
-    "Полярный рейнджер": {
+    "❄️Полярный рейнджер": {
         "description": "Убить 30 арктических животных",
         "reward_coins": 5000,
         "reward_exp": 3000,
@@ -299,7 +299,7 @@ ACHIEVEMENTS = {
         "condition_type": "location_kills",
         "condition_value": ("Арктика", 30)
     },
-    "Коллекционер": {
+    "📚Коллекционер": {
         "description": "Убить 40 разных видов животных",
         "reward_coins": 8000,
         "reward_exp": 0,
@@ -307,7 +307,7 @@ ACHIEVEMENTS = {
         "condition_type": "unique_animals",
         "condition_value": 40
     },
-    "Снайпер": {
+    "🔫Снайпер": {
         "description": "10 успешных выстрелов подряд без промаха",
         "reward_coins": 3000,
         "reward_exp": 0,
@@ -316,41 +316,41 @@ ACHIEVEMENTS = {
         "condition_value": 10
     },
     "💪 Здоровяк": {
-        "description": "Иметь 250 максимального HP",
-        "reward_coins": 5000,
-        "reward_exp": 0,
+        "description": "Иметь 200 максимального HP",
+        "reward_coins": 2500,
+        "reward_exp": 200,
         "title": "💪 Качок",
         "condition_type": "max_health",
-        "condition_value": 250
+        "condition_value": 200
     },
     "🛡️ Непробиваемый": {
         "description": "Выдержать 10 контратак подряд без лечения",
         "reward_coins": 3000,
         "reward_exp": 0,
-        "title": "🛡️ Стальная воля",
+        "title": "🛡️ Непробиваемый",
         "condition_type": "counterattack_streak",
         "condition_value": 10
     },
     "🏃 Мастер побега": {
         "description": "Убежать от 5 титанов подряд",
-        "reward_coins": 4000,
-        "reward_exp": 0,
+        "reward_coins": 20000,
+        "reward_exp": 1500,
         "title": "🏃 Призрак",
         "condition_type": "titan_escape_streak",
         "condition_value": 5
     },
     "💀 Смертник": {
-        "description": "Умереть 5 раз",
-        "reward_coins": 2000,
-        "reward_exp": 0,
-        "title": "💀 Бессмертный",
+        "description": "Умереть 10 раз",
+        "reward_coins": 4000,
+        "reward_exp": 1,
+        "title": "🪖 Павший воин",
         "condition_type": "deaths",
-        "condition_value": 5
+        "condition_value": 10
     },
     "🎯 Ловец удачи": {
         "description": "Поймать тяжёлое животное в ловушку",
-        "reward_coins": 5000,
-        "reward_exp": 0,
+        "reward_coins": 4000,
+        "reward_exp": 500,
         "title": "🎯 Счастливчик",
         "condition_type": "trap_heavy",
         "condition_value": 1
@@ -358,8 +358,8 @@ ACHIEVEMENTS = {
     "🐟 Рыбак": {
         "description": "Использовать ловушки 30 дней подряд",
         "reward_coins": 8000,
-        "reward_exp": 0,
-        "title": "🐟 Старый рыбак",
+        "reward_exp": 1000,
+        "title": "🐟 Рыбак",
         "condition_type": "trap_days_streak",
         "condition_value": 30
     }
@@ -367,25 +367,28 @@ ACHIEVEMENTS = {
 
 RANKS = {
     0: {"name": "🐣 Новичок", "bonus_exp": 0, "bonus_coins": 0},
-    15: {"name": "🎯 Начинающий охотник", "bonus_exp": 1, "bonus_coins": 0},
-    35: {"name": "🏹 Продвинутый охотник", "bonus_exp": 3, "bonus_coins": 0},
-    75: {"name": "⚔️ Мастер охоты", "bonus_exp": 5, "bonus_coins": 2},
-    150: {"name": "🐉 Легендарный охотник", "bonus_exp": 10, "bonus_coins": 5},
+    20: {"name": "🎯 Начинающий охотник", "bonus_exp": 1, "bonus_coins": 0},
+    50: {"name": "🏹 Продвинутый охотник", "bonus_exp": 3, "bonus_coins": 0},
+    100: {"name": "⚔️ Мастер охоты", "bonus_exp": 5, "bonus_coins": 2},
+    250: {"name": "🐉 Легендарный охотник", "bonus_exp": 10, "bonus_coins": 5},
     500: {"name": "👑 Король зверей", "bonus_exp": 15, "bonus_coins": 8},
-    1000: {"name": "🌟 Божество охоты", "bonus_exp": 20, "bonus_coins": 10}
+    1000: {"name": "🌟 Божество охоты", "bonus_exp": 20, "bonus_coins": 10},
+    3000: {"name": "💀 Властелин дикой природы", "bonus_exp": 35, "bonus_coins": 15},
+    5000: {"name": "🌌 Повелитель бездны", "bonus_exp": 50, "bonus_coins": 25}
+
 }
 
 PRESTIGES = {
-    1: {"name": "🥉 Бронза", "requirements": {"level": 20, "kills": 100, "coins": 20000}},
-    2: {"name": "🥈 Серебро", "requirements": {"level": 30, "kills": 250, "coins": 50000, "unique_animals": 15}},
-    3: {"name": "🥇 Золото", "requirements": {"level": 40, "kills": 500, "coins": 100000, "titans": 1}},
-    4: {"name": "💎 Платина", "requirements": {"level": 50, "kills": 750, "coins": 200000, "dangerous": 5}},
-    5: {"name": "🔮 Сапфир", "requirements": {"level": 60, "kills": 1000, "coins": 300000, "titans": 3}},
-    6: {"name": "❄️ Кристалл", "requirements": {"level": 70, "kills": 1500, "coins": 500000, "arctic": 10}},
-    7: {"name": "🌙 Обсидиан", "requirements": {"level": 80, "kills": 2000, "coins": 750000, "all_locations": True}},
-    8: {"name": "☀️ Аметист", "requirements": {"level": 90, "kills": 3000, "coins": 1000000, "titans": 15}},
-    9: {"name": "⭐ Топаз", "requirements": {"level": 100, "kills": 5000, "coins": 2000000, "all_weapons": True}},
-    10: {"name": "👑 Алмаз", "requirements": {"level": 150, "kills": 10000, "coins": 5000000, "all_titans": 5}}
+    1: {"name": "🥉 Бронза", "requirements": {"level": 45, "kills": 150, "coins": 50000}},
+    2: {"name": "🥈 Серебро", "requirements": {"level": 75, "kills": 250, "coins": 100000, "unique_animals": 15}},
+    3: {"name": "🥇 Золото", "requirements": {"level": 100, "kills": 500, "coins": 200000, "titans": 1}},
+    4: {"name": "💎 Платина", "requirements": {"level": 150, "kills": 750, "coins": 300000, "dangerous": 5}},
+    5: {"name": "🔮 Сапфир", "requirements": {"level": 200, "kills": 1000, "coins": 400000, "titans": 3}},
+    6: {"name": "❄️ Кристалл", "requirements": {"level": 250, "kills": 1500, "coins": 500000, "arctic": 10}},
+    7: {"name": "🌙 Обсидиан", "requirements": {"level": 300, "kills": 2000, "coins": 750000, "all_locations": True}},
+    8: {"name": "☀️ Аметист", "requirements": {"level": 350, "kills": 3000, "coins": 1000000, "titans": 15}},
+    9: {"name": "⭐ Топаз", "requirements": {"level": 400, "kills": 5000, "coins": 2000000, "all_weapons": True}},
+    10: {"name": "👑 Алмаз", "requirements": {"level": 500, "kills": 10000, "coins": 5000000, "all_titans": 5}}
 }
 
 STICKERS = {"Заяц": "", "Белка": "", "Бобр": "", "Кабан": "", "Лев": "", "Тираннозавр": ""}
@@ -2979,4 +2982,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
