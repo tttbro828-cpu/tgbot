@@ -23,7 +23,7 @@ LOCATIONS = {
         "Мелочь": ["Заяц", "Белка", "Бурундук", "Рябчик", "Выдра", "Ласка", "Горностай", "Соболь", "Барсук", "Землеройка" ],
         "Средн": ["Бобр", "Глухарь", "Сев олень", "Косуля", "Лиса", "Енот", "Уж" ],
         "Опасн": ["Кабан", "Рысь", "Росомаха", "Серый волк", "Бурый медведь", "Гадюка", "Гризли"],
-        "Тяжел": ["Лось" "Зубр", "Амур Тигр"],
+        "Тяжел": ["Лось", "Зубр", "Амур Тигр"],
         "Титан": ["Оборотень", "Вендиго", "Василиск"]
     }},
     "Саванна": {"level": 10, "animals": {
@@ -134,7 +134,6 @@ MISS_PHRASES = [
     "Зверь продемонстрировал феноменальную реакцию! ⚡"
 ]
 
-# ================== СНАРЯЖЕНИЕ ==================
 # ================== СНАРЯЖЕНИЕ ==================
 EQUIPMENT = {
     "Приманка": {
@@ -393,7 +392,7 @@ ANIMAL_ATTACK_PHRASES = {
     "Энтелодонт": ["Энтелодонт кусает мощными челюстями! -25HP", "Свино-медведь атакует! -25HP"],
     "Келенкен": ["Келенкен клюет огромным клювом! -25HP", "Исполинская птица атакует! -25HP"],
     "Гиенодон": ["Гиенодон разрывает плоть! -25HP", "Древний хищник нападает! -25HP"],
-    "Трицератопс": ["Трицератопс атакует! -50HP", "Трицератопс прокалывает рогами! -50HP"],
+    "Трицератоп스": ["Трицератопс атакует! -50HP", "Трицератопс прокалывает рогами! -50HP"],
     "Стегоз": ["Стегозавр ударяет хвостом! -50HP", "Стегозавр бьет шипами! -50HP"],
     "Гадрозавр": ["Гадрозавр топчет! -50HP", "Утконосый динозавр атакует! -50HP"],
     "Эласмотерии": ["Эласмотерии бьет рогом! -50HP", "Гигантский носорог таранит! -50HP"],
@@ -866,7 +865,7 @@ def ensure_user(user_id: int, username: str = None):
         )
         sql.execute(
             "INSERT OR IGNORE INTO user_weapons VALUES (?, ?)",
-            (user_id, "Револьвер")
+            (user_id, "Револьver")
         )
         db.commit()
         user = sql.execute("SELECT * FROM users WHERE user_id = ?", (user_id,)).fetchone()
@@ -2364,8 +2363,8 @@ async def shoot(call: CallbackQuery):
         current_hp, max_hp = get_user_health(call.from_user.id)
         
         # Проверяем возможность охоты (нужно HP > 0)
-        if current_hp <= 25:
-            await call.message.edit_text("❌ Вы плохо себя чувствуете! Необходимо восстановить здоровье до 25 HP или больше.")
+        if current_hp <= 0:
+            await call.message.edit_text("❌ Вы мертвы! Необходимо восстановить здоровье.")
             return
         
         hit_success = check_hit(user[3], group, call.from_user.id)
@@ -2385,6 +2384,33 @@ async def shoot(call: CallbackQuery):
             base_coins, base_exp = REWARDS[group]
             coins = base_coins + int(base_coins * coins_bonus / 100)
             exp = base_exp + int(base_exp * exp_bonus / 100)
+            
+            # Добавляем животное в инвентарь
+            trophy = sql.execute("SELECT count FROM trophies WHERE user_id = ? AND animal = ?", 
+                               (call.from_user.id, animal)).fetchone()
+            if trophy:
+                sql.execute("UPDATE trophies SET count = count + 1 WHERE user_id = ? AND animal = ?", 
+                           (call.from_user.id, animal))
+            else:
+                sql.execute("INSERT INTO trophies VALUES (?, ?, ?)", (call.from_user.id, animal, 1))
+            
+            # Обновляем счетчики убийств
+            sql.execute("UPDATE users SET total_kills = total_kills + 1, daily_kills = daily_kills + 1 WHERE user_id = ?", 
+                       (call.from_user.id,))
+            
+            # Обновляем монеты и опыт
+            sql.execute("UPDATE users SET coins = coins + ?, exp = exp + ? WHERE user_id = ?", 
+                       (coins, exp, call.from_user.id))
+            
+            # Добавляем в статистику дня
+            today = datetime.now().strftime("%Y-%m-%d")
+            stats = sql.execute("SELECT kills FROM stats_daily WHERE user_id = ? AND date = ?", 
+                              (call.from_user.id, today)).fetchone()
+            if stats:
+                sql.execute("UPDATE stats_daily SET kills = kills + 1 WHERE user_id = ? AND date = ?", 
+                          (call.from_user.id, today))
+            else:
+                sql.execute("INSERT INTO stats_daily VALUES (?, ?, ?)", (call.from_user.id, today, 1))
             
             # Проверяем достижения
             new_achievements = check_achievements(call.from_user.id)
@@ -2486,8 +2512,8 @@ async def finish_animal(call: CallbackQuery):
         current_hp, max_hp = get_user_health(call.from_user.id)
         
         # Проверяем возможность охоты (нужно HP > 0)
-        if current_hp <= 25:
-            await call.message.edit_text("❌ Вы плохо себя чувствуете! Необходимо восстановить здоровье до 25 HP или больше.")
+        if current_hp <= 0:
+            await call.message.edit_text("❌ Вы мертвы! Необходимо восстановить здоровье.")
             return
         
         hit_success = check_hit(user[3], group, call.from_user.id)
@@ -2505,7 +2531,34 @@ async def finish_animal(call: CallbackQuery):
             base_coins, base_exp = REWARDS[group]
             coins = (base_coins // 2) + int((base_coins // 2) * coins_bonus / 100)
             exp = (base_exp // 2) + int((base_exp // 2) * exp_bonus / 100)
-
+            
+            # Добавляем животное в инвентарь
+            trophy = sql.execute("SELECT count FROM trophies WHERE user_id = ? AND animal = ?", 
+                               (call.from_user.id, animal)).fetchone()
+            if trophy:
+                sql.execute("UPDATE trophies SET count = count + 1 WHERE user_id = ? AND animal = ?", 
+                           (call.from_user.id, animal))
+            else:
+                sql.execute("INSERT INTO trophies VALUES (?, ?, ?)", (call.from_user.id, animal, 1))
+            
+            # Обновляем счетчики убийств
+            sql.execute("UPDATE users SET total_kills = total_kills + 1, daily_kills = daily_kills + 1 WHERE user_id = ?", 
+                       (call.from_user.id,))
+            
+            # Обновляем монеты и опыт
+            sql.execute("UPDATE users SET coins = coins + ?, exp = exp + ? WHERE user_id = ?", 
+                       (coins, exp, call.from_user.id))
+            
+            # Добавляем в статистику дня
+            today = datetime.now().strftime("%Y-%m-%d")
+            stats = sql.execute("SELECT kills FROM stats_daily WHERE user_id = ? AND date = ?", 
+                              (call.from_user.id, today)).fetchone()
+            if stats:
+                sql.execute("UPDATE stats_daily SET kills = kills + 1 WHERE user_id = ? AND date = ?", 
+                          (call.from_user.id, today))
+            else:
+                sql.execute("INSERT INTO stats_daily VALUES (?, ?, ?)", (call.from_user.id, today, 1))
+            
             # Проверяем достижения
             new_achievements = check_achievements(call.from_user.id)
             
@@ -2534,7 +2587,7 @@ async def finish_animal(call: CallbackQuery):
                 await call.message.edit_text(
                     f"{attack_phrase}\n\n"
                     f"💀 Вы погибли! Здоровье: 0/{max_hp}\n"
-                    f"Вы не можете охотиться до восстановления 25 HP или более."
+                    f"Вы не можете охотиться до восстановления здоровья."
                 )
                 return
             
@@ -2600,7 +2653,7 @@ async def run_from_animal(call: CallbackQuery):
                     await call.message.edit_text(
                         f"💀 Титан догнал вас! Вы погибли...\n"
                         f"Здоровье: 0/{max_hp}\n"
-                        f"Вы не можете охотиться до восстановления 25HP или более."
+                        f"Вы не можете охотиться до восстановления здоровья."
                     )
                 else:
                     await call.message.edit_text(
@@ -2824,43 +2877,121 @@ async def titles_command(msg: Message):
     completed = get_completed_achievements(msg.from_user.id)
     current_title = user[9] if len(user) > 9 and user[9] else "❌ Нет"
     
-    text = f"👑 Ваши титулы (текущий: {current_title}):\n\n"
-    
+    # Собираем все доступные титулы
     available_titles = []
     
     for achievement_name, achievement_data in ACHIEVEMENTS.items():
         if achievement_name in completed and achievement_data['title']:
-            available_titles.append(achievement_data['title'])
+            available_titles.append({
+                'title': achievement_data['title'],
+                'achievement_name': achievement_name
+            })
     
     if not available_titles:
+        text = "👑 Ваши титулы\n\n"
         text += "У вас пока нет титулов. Выполняйте достижения!\n\n"
         text += "Для выполнения достижений используйте команду: достижения"
         await msg.answer(text)
         return
     
+    # Пагинация: 6 титулов на страницу + кнопка "Следующая"
+    page = 0
+    titles_per_page = 6
+    total_pages = (len(available_titles) + titles_per_page - 1) // titles_per_page
+    
+    text = f"👑 Ваши титулы (текущий: {current_title})\n"
+    text += f"Страница {page + 1}/{total_pages}\n\n"
+    
+    await show_titles_page(msg.from_user.id, available_titles, current_title, page, total_pages, msg)
+
+async def show_titles_page(user_id: int, available_titles: list, current_title: str, page: int, total_pages: int, msg: Message):
+    """Показать страницу с титулами"""
+    titles_per_page = 6
+    start_idx = page * titles_per_page
+    end_idx = start_idx + titles_per_page
+    page_titles = available_titles[start_idx:end_idx]
+    
     buttons = []
-    for title in available_titles:
+    
+    for title_data in page_titles:
+        title = title_data['title']
         if title == current_title:
             buttons.append([InlineKeyboardButton(text=f"✅ {title} (выбран)", callback_data="no_action")])
         else:
-            buttons.append([InlineKeyboardButton(text=f"👑 {title}", callback_data=f"select_title:{msg.from_user.id}:{title}")])
+            buttons.append([InlineKeyboardButton(text=f"👑 {title}", 
+                callback_data=f"select_title:{user_id}:{title}:{page}")])
+    
+    # Добавляем кнопки навигации
+    nav_buttons = []
+    if page > 0:
+        nav_buttons.append(InlineKeyboardButton(text="◀️ Назад", callback_data=f"titles_page:{user_id}:{page-1}"))
     
     if current_title != "❌ Нет":
-        buttons.append([InlineKeyboardButton(text="❌ Снять титул", callback_data=f"remove_title:{msg.from_user.id}")])
+        nav_buttons.append(InlineKeyboardButton(text="❌ Снять титул", callback_data=f"remove_title:{user_id}"))
+    
+    if page < total_pages - 1:
+        nav_buttons.append(InlineKeyboardButton(text="Вперед ▶️", callback_data=f"titles_page:{user_id}:{page+1}"))
+    
+    if nav_buttons:
+        buttons.append(nav_buttons)
     
     kb = InlineKeyboardMarkup(inline_keyboard=buttons)
     
-    text = f"👑 Выберите титул (текущий: {current_title}):"
+    text = f"👑 Выберите титул (текущий: {current_title})\n"
+    text += f"Страница {page + 1}/{total_pages}"
+    
     await msg.answer(text, reply_markup=kb)
 
-@dp.callback_query(lambda c: c.data.startswith("select_title"))
-async def select_title_callback(call: CallbackQuery):
+@dp.callback_query(lambda c: c.data.startswith("titles_page:"))
+async def titles_page_callback(call: CallbackQuery):
     data_parts = call.data.split(":")
     if len(data_parts) < 3:
         await call.answer("❌ Ошибка данных", show_alert=True)
         return
     
-    user_id, title = data_parts[1:]
+    user_id, page_str = data_parts[1:]
+    page = int(page_str)
+    
+    if int(user_id) != call.from_user.id:
+        await call.answer("❌ Это не ваше меню!", show_alert=True)
+        return
+    
+    user = ensure_user(call.from_user.id)
+    completed = get_completed_achievements(call.from_user.id)
+    current_title = user[9] if len(user) > 9 and user[9] else "❌ Нет"
+    
+    # Собираем все доступные титулы
+    available_titles = []
+    for achievement_name, achievement_data in ACHIEVEMENTS.items():
+        if achievement_name in completed and achievement_data['title']:
+            available_titles.append({
+                'title': achievement_data['title'],
+                'achievement_name': achievement_name
+            })
+    
+    if not available_titles:
+        await call.message.edit_text("👑 У вас пока нет титулов.")
+        return
+    
+    titles_per_page = 6
+    total_pages = (len(available_titles) + titles_per_page - 1) // titles_per_page
+    
+    if page >= total_pages:
+        page = total_pages - 1
+    if page < 0:
+        page = 0
+    
+    await show_titles_page(call.from_user.id, available_titles, current_title, page, total_pages, call.message)
+
+@dp.callback_query(lambda c: c.data.startswith("select_title:"))
+async def select_title_callback(call: CallbackQuery):
+    data_parts = call.data.split(":")
+    if len(data_parts) < 4:
+        await call.answer("❌ Ошибка данных", show_alert=True)
+        return
+    
+    user_id, title, page_str = data_parts[1:]
+    page = int(page_str)
     
     if int(user_id) != call.from_user.id:
         await call.answer("❌ Это не ваш титул!", show_alert=True)
@@ -2869,9 +3000,31 @@ async def select_title_callback(call: CallbackQuery):
     sql.execute("UPDATE users SET current_title = ? WHERE user_id = ?", (title, call.from_user.id))
     db.commit()
     
-    await call.message.edit_text(f"✅ Титул изменён на: {title}")
+    await call.answer(f"✅ Титул изменён на: {title}", show_alert=True)
+    
+    # Обновляем меню
+    user = ensure_user(call.from_user.id)
+    completed = get_completed_achievements(call.from_user.id)
+    current_title = title
+    
+    available_titles = []
+    for achievement_name, achievement_data in ACHIEVEMENTS.items():
+        if achievement_name in completed and achievement_data['title']:
+            available_titles.append({
+                'title': achievement_data['title'],
+                'achievement_name': achievement_name
+            })
+    
+    if available_titles:
+        titles_per_page = 6
+        total_pages = (len(available_titles) + titles_per_page - 1) // titles_per_page
+        
+        if page >= total_pages:
+            page = total_pages - 1
+        
+        await show_titles_page(call.from_user.id, available_titles, current_title, page, total_pages, call.message)
 
-@dp.callback_query(lambda c: c.data.startswith("remove_title"))
+@dp.callback_query(lambda c: c.data.startswith("remove_title:"))
 async def remove_title_callback(call: CallbackQuery):
     data_parts = call.data.split(":")
     if len(data_parts) < 2:
@@ -2887,7 +3040,28 @@ async def remove_title_callback(call: CallbackQuery):
     sql.execute("UPDATE users SET current_title = '' WHERE user_id = ?", (call.from_user.id,))
     db.commit()
     
-    await call.message.edit_text("✅ Титул снят")
+    await call.answer("✅ Титул снят", show_alert=True)
+    
+    # Обновляем меню
+    user = ensure_user(call.from_user.id)
+    completed = get_completed_achievements(call.from_user.id)
+    current_title = "❌ Нет"
+    
+    available_titles = []
+    for achievement_name, achievement_data in ACHIEVEMENTS.items():
+        if achievement_name in completed and achievement_data['title']:
+            available_titles.append({
+                'title': achievement_data['title'],
+                'achievement_name': achievement_name
+            })
+    
+    if available_titles:
+        titles_per_page = 6
+        total_pages = (len(available_titles) + titles_per_page - 1) // titles_per_page
+        page = 0
+        await show_titles_page(call.from_user.id, available_titles, current_title, page, total_pages, call.message)
+    else:
+        await call.message.edit_text("👑 Титул снят. У вас больше нет доступных титулов.")
 
 @dp.callback_query(lambda c: c.data == "no_action")
 async def no_action(call: CallbackQuery):
@@ -3691,7 +3865,6 @@ async def shop_survival(call: CallbackQuery):
     
     kb = InlineKeyboardMarkup(inline_keyboard=buttons)
     await call.message.edit_text(f"💰 Ваш баланс: {user[1]} монет\n\n🛡️ Выберите локацию для покупки предметов выживания:", reply_markup=kb)
-
 @dp.callback_query(lambda c: c.data.startswith("survival_location"))
 async def survival_location(call: CallbackQuery):
     data_parts = call.data.split(":")[1:]
@@ -4379,7 +4552,10 @@ async def main():
     print("• Справка - Помощь")
     print("=" * 50)
     print("🆕 НОВЫЕ ФУНКЦИИ И ИСПРАВЛЕНИЯ:")
-    print("✅ Исправлена система здоровья: можно охотиться при любом HP > 0 (только смерть блокирует)")
+    print("✅ Животные теперь добавляются в инвентарь при убийстве")
+    print("✅ Награды (монеты и опыт) правильно начисляются")
+    print("✅ Меню титулов с пагинацией (максимум 7 кнопок на страницу)")
+    print("✅ Исправлена система здоровья: можно охотиться при любом HP > 0")
     print("✅ Исправлены ошибки с животными: Бурый медведь, Белый медведь, Комодский варан")
     print("✅ Исправлена система выживания: урон ровно каждые 5 охот")
     print("✅ Привязаны правильные фразы атаки для каждого животного")
