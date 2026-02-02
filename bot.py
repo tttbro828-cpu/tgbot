@@ -2299,7 +2299,7 @@ async def hunt(msg: Message):
     if has_diamond_bullet:
         buff_text += "💎 Алмазная пуля активна! +20% к шансу попадания\n"
     if has_immortality_staff:
-        buff_text += "🪄 Посох бессмертия активен! Защита от следующей контратаки\n"
+        buff_text += ""
     
     if buff_text:
         await msg.answer(f"{buff_text}Ты блуждаешь по {user[4]} и внезапно замечаешь {animal}!", reply_markup=kb)
@@ -4283,20 +4283,43 @@ async def traps_command(msg: Message):
 
 # ================== ФУНКЦИЯ ОБНОВЛЕНИЯ БД ==================
 def update_database():
-    """Обновляет структуру базы данных при необходимости"""
+    """Обновляет структуру базы данных при необходимости - ИСПРАВЛЕННАЯ ВЕРСИЯ"""
+    # Все колонки, которые должны быть в таблице users
     columns_to_add = [
+        ("survival_hunt_count", "INTEGER DEFAULT 0"),
+        ("survival_damage_count", "INTEGER DEFAULT 0"),
         ("diamond_bullet", "INTEGER DEFAULT 0"),
         ("immortality_staff", "INTEGER DEFAULT 0"),
         ("energy_drink", "INTEGER DEFAULT 0"),
-        ("hunt_counter", "INTEGER DEFAULT 0")
+        ("hunt_counter", "INTEGER DEFAULT 0"),
+        ("golden_bullet", "INTEGER DEFAULT 0"),
+        ("drone_target", "TEXT DEFAULT ''"),
+        ("drone_expires", "INTEGER DEFAULT 0"),
+        ("last_daily_gift", "INTEGER DEFAULT 0"),
+        ("counterattack_streak", "INTEGER DEFAULT 0"),
+        ("titan_escape_streak", "INTEGER DEFAULT 0"),
+        ("trap_days_streak", "INTEGER DEFAULT 0"),
+        ("last_trap_use", "INTEGER DEFAULT 0"),
+        ("traps_used", "INTEGER DEFAULT 0"),
+        ("heavy_traps", "INTEGER DEFAULT 0"),
+        ("last_achievement_check", "INTEGER DEFAULT 0"),
+        ("achievement_streak", "INTEGER DEFAULT 0"),
+        ("deaths", "INTEGER DEFAULT 0")
     ]
+    
+    print("🔄 Проверка структуры базы данных...")
     
     for column_name, column_type in columns_to_add:
         try:
             sql.execute(f"SELECT {column_name} FROM users LIMIT 1")
+            print(f"✓ Колонка {column_name} уже существует")
         except sqlite3.OperationalError:
-            sql.execute(f"ALTER TABLE users ADD COLUMN {column_name} {column_type}")
-            print(f"✅ Добавлена колонка {column_name}")
+            try:
+                sql.execute(f"ALTER TABLE users ADD COLUMN {column_name} {column_type}")
+                db.commit()
+                print(f"✅ Добавлена колонка {column_name}")
+            except Exception as e:
+                print(f"❌ Ошибка при добавлении колонки {column_name}: {e}")
     
     # Проверяем существование таблиц
     tables_to_check = [
@@ -4306,10 +4329,16 @@ def update_database():
     for table_name, create_sql in tables_to_check:
         try:
             sql.execute(f"SELECT 1 FROM {table_name} LIMIT 1")
+            print(f"✓ Таблица {table_name} уже существует")
         except sqlite3.OperationalError:
-            sql.execute(create_sql)
-            print(f"✅ Создана таблица {table_name}")
+            try:
+                sql.execute(create_sql)
+                db.commit()
+                print(f"✅ Создана таблица {table_name}")
+            except Exception as e:
+                print(f"❌ Ошибка при создании таблицы {table_name}: {e}")
     
+    print("✅ Проверка структуры БД завершена")
     db.commit()
 
 # ================== ЗАПУСК ==================
@@ -4384,4 +4413,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
