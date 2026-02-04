@@ -4537,7 +4537,9 @@ def update_database():
         ("heavy_traps", "INTEGER DEFAULT 0"),
         ("last_achievement_check", "INTEGER DEFAULT 0"),
         ("achievement_streak", "INTEGER DEFAULT 0"),
-        ("deaths", "INTEGER DEFAULT 0")
+        ("deaths", "INTEGER DEFAULT 0"),
+        ("current_title", "TEXT DEFAULT ''"),
+        ("achievements_completed", "TEXT DEFAULT '{}'")
     ]
     
     print("🔄 Проверка структуры базы данных...")
@@ -4650,3 +4652,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
