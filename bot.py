@@ -287,32 +287,32 @@ SURVIVAL_ITEMS = {
 # Фразы при потере HP из-за отсутствия предмета выживания
 SURVIVAL_DAMAGE_PHRASES = {
     "Саванна": [
-        "🔥 Невыносимая жара в Саванне иссушает ваши силы! -50HP",
-        "☀️ Солнце палит нещадно! Без воды вы слабеете. -50HP"
+        "🔥 Невыносимая жара в Саванне иссушает ваши силы! -80HP",
+        "☀️ Солнце палит нещадно! Без воды вы слабеете. -80HP"
     ],
     "Арктика": [
-        "❄️ Лютый холод Арктики пронизывает до костей! -50HP",
-        "🌬️ Ледяной ветер высасывает из вас тепло. -50HP"
+        "❄️ Лютый холод Арктики пронизывает до костей! -80HP",
+        "🌬️ Ледяной ветер высасывает из вас тепло. -80HP"
     ],
     "Джунгли": [
-        "🐍 Ядовитые испарения джунглей отравляют вас! -50HP",
-        "🦟 Тропические болезни подрывают здоровье. -50HP"
+        "🐍 Ядовитые испарения джунглей отравляют вас! -80HP",
+        "🦟 Тропические болезни подрывают здоровье. -80HP"
     ],
     "Древний мир": [
-        "🌀 Временные аномалии разрушают вашу сущность! -50HP",
-        "⏳ Искажение времени сказывается на здоровье. -50HP"
+        "🌀 Временные аномалии разрушают вашу сущность! -80HP",
+        "⏳ Искажение времени сказывается на здоровье. -80HP"
     ],
     "Горы": [
-        "⛰️ Высотная болезнь сжимает ваши легкие! -50HP",
-        "💨 Нехватка кислорода на высоте ослабляет вас. -50HP"
+        "⛰️ Высотная болезнь сжимает ваши легкие! -80HP",
+        "💨 Нехватка кислорода на высоте ослабляет вас. -80HP"
     ],
     "Подводный мир": [
-        "🌊 Без акваланга вы задыхаетесь под водой! -50HP",
-        "💧 Давление воды разрушает ваш организм. -50HP"
+        "🌊 Без акваланга вы задыхаетесь под водой! -80HP",
+        "💧 Давление воды разрушает ваш организм. -80HP"
     ],
     "Призрачный лес": [
-        "👻 Призрачные сущности высасывают жизненную энергию! -50HP",
-        "🕯️ Темная магия леса истощает ваши силы. -50HP"
+        "👻 Призрачные сущности высасывают жизненную энергию! -80HP",
+        "🕯️ Темная магия леса истощает ваши силы. -80HP"
     ]
 }
 
@@ -355,7 +355,6 @@ ANIMAL_ATTACK_PHRASES = {
     "Бурый медведь": ["Бурый медведь наносит сокрушительный удар! -25HP", "Бурый медведь сбивает с ног! -25HP"],
     "Лось": ["Лось бьет рогами! -50HP", "Лось топчет копытами! -50HP"],
     "Оборотень": ["Оборотень впивается клыками в горло! -100HP", "Оборотень разрывает когтями! -100HP"],
-    ""
     
     # Саванна
     "Гиена": ["Гиена хватает за ногу! -25HP", "Гиена стаей нападает! -25HP"],
@@ -392,7 +391,7 @@ ANIMAL_ATTACK_PHRASES = {
     "Энтелодонт": ["Энтелодонт кусает мощными челюстями! -25HP", "Свино-медведь атакует! -25HP"],
     "Келенкен": ["Келенкен клюет огромным клювом! -25HP", "Исполинская птица атакует! -25HP"],
     "Гиенодон": ["Гиенодон разрывает плоть! -25HP", "Древний хищник нападает! -25HP"],
-    "Трицератоп스": ["Трицератопс атакует! -50HP", "Трицератопс прокалывает рогами! -50HP"],
+    "Трицератопс": ["Трицератопс атакует! -50HP", "Трицератопс прокалывает рогами! -50HP"],
     "Стегоз": ["Стегозавр ударяет хвостом! -50HP", "Стегозавр бьет шипами! -50HP"],
     "Гадрозавр": ["Гадрозавр топчет! -50HP", "Утконосый динозавр атакует! -50HP"],
     "Эласмотерии": ["Эласмотерии бьет рогом! -50HP", "Гигантский носорог таранит! -50HP"],
@@ -532,7 +531,7 @@ ACHIEVEMENTS = {
         "description": "Убить 3 титана",
         "reward_coins": 10000,
         "reward_exp": 5000,
-        "title": "👑 Убийца титанов",
+        "title": "🔪 Убийца титанов",
         "condition_type": "titan_kills",
         "condition_value": 3
     },
@@ -644,7 +643,7 @@ ACHIEVEMENTS = {
         "description": "Купить все виды оружия",
         "reward_coins": 200000,
         "reward_exp": 10000,
-        "title": "👑 Оружейный маг",
+        "title": "🧝‍♂️ Оружейный маг",
         "condition_type": "all_weapons",
         "condition_value": 8
     },
@@ -665,8 +664,8 @@ RANKS = {
     100: {"name": "⚔️ Мастер охоты", "bonus_exp": 5, "bonus_coins": 2},
     250: {"name": "🐉 Легендарный охотник", "bonus_exp": 10, "bonus_coins": 5},
     500: {"name": "👑 Король зверей", "bonus_exp": 15, "bonus_coins": 8},
-    1000: {"name": "🌟 Божество охоты", "bonus_exp": 20, "bonus_coins": 10},
-    3000: {"name": "💀 Властелин дикой природы", "bonus_exp": 35, "bonus_coins": 15},
+    1000: {"name": "✨ Божество охоты", "bonus_exp": 20, "bonus_coins": 10},
+    3000: {"name": "🔥 Властелин дикой природы", "bonus_exp": 35, "bonus_coins": 15},
     5000: {"name": "🌌 Повелитель бездны", "bonus_exp": 50, "bonus_coins": 25},
     10000: {"name": "🪐 Межгалактический Хищник", "bonus_exp": 75, "bonus_coins": 50},
     50000: {"name": "♾️ Воплощение Смерти", "bonus_exp": 150, "bonus_coins": 100},
@@ -927,13 +926,13 @@ def heal_user(user_id: int, amount: int = None):
     db.commit()
 
 def can_hunt(user_id: int) -> tuple:
-    """Проверить, может ли игрок охотиться - ТОЛЬКО если HP=0 (умер)"""
+    """Проверить, может ли игрок охотиться - ЕСЛИ HP ≤ 25"""
     user = ensure_user(user_id)
     current_hp = user[13]
     
-    # Исправление: проверяем только если игрок УМЕР (HP=0)
-    if current_hp <= 0:
-        return False, "❌ Вы мертвы! Необходимо восстановить здоровье до 100 HP или больше.\nИспользуйте аптечку из магазина или подождите восстановления."
+    # ИСПРАВЛЕНИЕ 1: Нельзя охотиться при HP ≤ 25
+    if current_hp <= 25:
+        return False, "❌ У вас слишком мало здоровья (≤25 HP)! Необходимо восстановить здоровье до 26 HP или больше.\nИспользуйте аптечку из магазина или подождите восстановления."
     else:
         return True, "✅ Можно охотиться"
 
@@ -1043,19 +1042,27 @@ def check_hit(weapon: str, group: str, user_id: int = None):
     # Модификаторы
     final_chance = base_chance
     
-    # Проверяем золотую пулю
+    # ИСПРАВЛЕНИЕ 3: Используем прямой запрос к БД для проверки баффов
     if user_id:
-        user = ensure_user(user_id)
-        has_golden_bullet = user[23] if len(user) > 23 else 0
-        if has_golden_bullet:
-            final_chance *= 2  # x2 шанс попадания
+        # Прямой запрос к базе данных для получения текущих значений баффов
+        user_data = sql.execute("SELECT golden_bullet, diamond_bullet FROM users WHERE user_id = ?", (user_id,)).fetchone()
         
-        # Проверяем алмазную пулю
-        has_diamond_bullet = user[29] if len(user) > 29 else 0
-        if has_diamond_bullet:
-            final_chance += 20  # +20% шанс попадания
-            sql.execute("UPDATE users SET diamond_bullet = 0 WHERE user_id = ?", (user_id,))
-            db.commit()
+        if user_data:
+            has_golden_bullet, has_diamond_bullet = user_data
+            
+            # Проверяем золотую пулю
+            if has_golden_bullet:
+                final_chance *= 2  # x2 шанс попадания
+                # Сбрасываем золотую пулю сразу после проверки
+                sql.execute("UPDATE users SET golden_bullet = 0 WHERE user_id = ?", (user_id,))
+                db.commit()
+            
+            # Проверяем алмазную пулю
+            if has_diamond_bullet:
+                final_chance += 20  # +20% шанс попадания
+                # Сбрасываем алмазную пулю сразу после проверки
+                sql.execute("UPDATE users SET diamond_bullet = 0 WHERE user_id = ?", (user_id,))
+                db.commit()
     
     return random.uniform(0, 100) <= final_chance
 
@@ -1424,12 +1431,12 @@ def check_survival_damage(user_id: int, location: str):
         survival_hunt_count += 1
         
         # Каждые 5 охот - урон
-        if survival_hunt_count >= 5:
+        if survival_hunt_count >= 3:
             # Сбрасываем счетчик до 0
             survival_hunt_count = 0
             
             # Наносим урон
-            damage = 50
+            damage = 80
             new_hp = update_health(user_id, -damage)
             
             # Выбираем фразу
@@ -2150,8 +2157,8 @@ async def health_status(msg: Message):
     status_text = f"❤️ Здоровье: {current_hp}/{max_hp}\n"
     
     if current_hp <= 25:
-        status_text += f"💀 Вы плохо себя чувствуете! Необходимо восстановить здоровье.\n"
-        hp_needed = 1 - current_hp
+        status_text += f"💀 Слишком мало здоровья! Необходимо восстановить здоровье до 26 HP или больше.\n"
+        hp_needed = 26 - current_hp
         status_text += f"📉 Автоматическое восстановление: 1 HP в минуту\n"
         status_text += "💡 Совет: используйте аптечку из магазина для быстрого лечения!"
     elif current_hp < max_hp:
@@ -2288,9 +2295,9 @@ async def hunt(msg: Message):
     )]])
     
     # Проверяем баффы
-    has_golden_bullet = user[23] if len(user) > 23 else 0
-    has_diamond_bullet = user[29] if len(user) > 29 else 0
-    has_immortality_staff = user[30] if len(user) > 30 else 0
+    user_data = sql.execute("SELECT golden_bullet, diamond_bullet, immortality_staff FROM users WHERE user_id = ?", (msg.from_user.id,)).fetchone()
+    if user_data:
+        has_golden_bullet, has_diamond_bullet, has_immortality_staff = user_data
     
     buff_text = ""
     if has_golden_bullet:
@@ -2298,7 +2305,7 @@ async def hunt(msg: Message):
     if has_diamond_bullet:
         buff_text += "💎 Алмазная пуля активна! +20% к шансу попадания\n"
     if has_immortality_staff:
-        buff_text += ""
+        buff_text += "🪄 Посох бессмертия активен! Защита от контратаки\n"
     
     if buff_text:
         await msg.answer(f"{buff_text}Ты блуждаешь по {user[4]} и внезапно замечаешь {animal}!", reply_markup=kb)
@@ -2362,10 +2369,18 @@ async def shoot(call: CallbackQuery):
         user = ensure_user(call.from_user.id)
         current_hp, max_hp = get_user_health(call.from_user.id)
         
-        # Проверяем возможность охоты (нужно HP > 0)
-        if current_hp <= 0:
-            await call.message.edit_text("❌ Вы мертвы! Необходимо восстановить здоровье.")
+        # Проверяем возможность охоты (нужно HP > 25)
+        if current_hp <= 25:
+            await call.message.edit_text("❌ У вас слишком мало здоровья (≤25 HP)! Необходимо восстановить здоровье.")
             return
+        
+        # ИСПРАВЛЕНИЕ 3: Получаем актуальные данные о баффах из БД
+        user_data = sql.execute("SELECT golden_bullet, diamond_bullet FROM users WHERE user_id = ?", (call.from_user.id,)).fetchone()
+        if not user_data:
+            await call.answer("❌ Ошибка получения данных", show_alert=True)
+            return
+        
+        has_golden_bullet, has_diamond_bullet = user_data
         
         hit_success = check_hit(user[3], group, call.from_user.id)
         
@@ -2419,6 +2434,12 @@ async def shoot(call: CallbackQuery):
             
             result_text = f"🎯 Прямое попадание!\n\nТрофей: \"{animal}\"\n💰 Монеты: +{coins}\n⭐ Опыт: +{exp}"
             
+            if has_golden_bullet:
+                result_text += f"\n💫 Золотая пуля использована!"
+            
+            if has_diamond_bullet:
+                result_text += f"\n💎 Алмазная пуля использована!"
+            
             if new_achievements:
                 achievements_text = "\n\n🎉 Новые достижения:\n"
                 for achievement_name in new_achievements:
@@ -2432,7 +2453,23 @@ async def shoot(call: CallbackQuery):
             sql.execute("UPDATE users SET achievement_streak = 0 WHERE user_id = ?", (call.from_user.id,))
             
             if group in ["Опасн", "Тяжел", "Титан"]:
-                # КОНТРАТАКА - УБИРАЕМ ФРАЗУ ПРОМАХА!
+                # КОНТРАТАКА
+                # Проверяем посох бессмертия
+                user_data = sql.execute("SELECT immortality_staff FROM users WHERE user_id = ?", (call.from_user.id,)).fetchone()
+                has_immortality_staff = user_data[0] if user_data else 0
+                
+                if has_immortality_staff:
+                    # Игрок защищен посохом бессмертия
+                    sql.execute("UPDATE users SET immortality_staff = 0 WHERE user_id = ?", (call.from_user.id,))
+                    db.commit()
+                    
+                    await call.message.edit_text(
+                        f"🪄 Посох бессмертия защитил вас от контратаки!\n"
+                        f"❤️ Здоровье: {current_hp}/{max_hp}\n\n"
+                        f"Что будете делать?"
+                    )
+                    return
+                
                 damage = CONTRATTACK_DAMAGE.get(group, 0)
                 new_hp = update_health(call.from_user.id, -damage)
                 current_hp, max_hp = get_user_health(call.from_user.id)
@@ -2447,10 +2484,10 @@ async def shoot(call: CallbackQuery):
                 # Используем специальную фразу для животного
                 attack_phrase = get_animal_attack_phrase(animal)
                 
-                if current_hp <= 0:
+                if current_hp <= 25:
                     await call.message.edit_text(
                         f"{attack_phrase}\n\n"
-                        f"💀 Вы погибли! Здоровье: 0/{max_hp}\n"
+                        f"💀 У вас слишком мало здоровья (≤25 HP)! Здоровье: {current_hp}/{max_hp}\n"
                         f"Вы не можете охотиться до восстановления здоровья.\n"
                         f"Используйте аптечку из магазина или подождите восстановления."
                     )
@@ -2511,9 +2548,9 @@ async def finish_animal(call: CallbackQuery):
         user = ensure_user(call.from_user.id)
         current_hp, max_hp = get_user_health(call.from_user.id)
         
-        # Проверяем возможность охоты (нужно HP > 0)
-        if current_hp <= 0:
-            await call.message.edit_text("❌ Вы мертвы! Необходимо восстановить здоровье.")
+        # Проверяем возможность охоты (нужно HP > 25)
+        if current_hp <= 25:
+            await call.message.edit_text("❌ У вас слишком мало здоровья (≤25 HP)! Необходимо восстановить здоровье.")
             return
         
         hit_success = check_hit(user[3], group, call.from_user.id)
@@ -2575,7 +2612,32 @@ async def finish_animal(call: CallbackQuery):
             await call.message.edit_text(result_text)
             
         else:
-            # НОВАЯ КОНТРАТАКА - БЕЗ ФРАЗЫ ПРОМАХА!
+            # НОВАЯ КОНТРАТАКА
+            # Проверяем посох бессмертия
+            user_data = sql.execute("SELECT immortality_staff FROM users WHERE user_id = ?", (call.from_user.id,)).fetchone()
+            has_immortality_staff = user_data[0] if user_data else 0
+            
+            if has_immortality_staff:
+                # Игрок защищен посохом бессмертия
+                sql.execute("UPDATE users SET immortality_staff = 0 WHERE user_id = ?", (call.from_user.id,))
+                db.commit()
+                
+                hunt_data_new = f"{call.from_user.id}|{group}|{animal}|{hunt_time}"
+                try_count += 1
+                
+                kb = InlineKeyboardMarkup(inline_keyboard=[
+                    [InlineKeyboardButton(text=f"⚔️ Добить (еще риск!)", callback_data=f"finish|{hunt_data_new}|{try_count}")],
+                    [InlineKeyboardButton(text="🏃 Бежать", callback_data=f"run|{hunt_data_new}")]
+                ])
+                
+                await call.message.edit_text(
+                    f"🪄 Посох бессмертия защитил вас от контратаки!\n"
+                    f"❤️ Здоровье: {current_hp}/{max_hp}\n\n"
+                    f"Что будете делать?",
+                    reply_markup=kb
+                )
+                return
+            
             damage = CONTRATTACK_DAMAGE.get(group, 0) + (25 * try_count)
             new_hp = update_health(call.from_user.id, -damage)
             current_hp, max_hp = get_user_health(call.from_user.id)
@@ -2583,10 +2645,10 @@ async def finish_animal(call: CallbackQuery):
             # Используем специальную фразу для животного
             attack_phrase = get_animal_attack_phrase(animal)
             
-            if current_hp <= 0:
+            if current_hp <= 25:
                 await call.message.edit_text(
                     f"{attack_phrase}\n\n"
-                    f"💀 Вы погибли! Здоровье: 0/{max_hp}\n"
+                    f"💀 У вас слишком мало здоровья (≤25 HP)! Здоровье: {current_hp}/{max_hp}\n"
                     f"Вы не можете охотиться до восстановления здоровья."
                 )
                 return
@@ -2649,10 +2711,10 @@ async def run_from_animal(call: CallbackQuery):
                           (call.from_user.id,))
                 
                 current_hp, max_hp = get_user_health(call.from_user.id)
-                if current_hp <= 0:
+                if current_hp <= 25:
                     await call.message.edit_text(
-                        f"💀 Титан догнал вас! Вы погибли...\n"
-                        f"Здоровье: 0/{max_hp}\n"
+                        f"💀 Титан догнал вас! У вас слишком мало здоровья (≤25 HP)\n"
+                        f"Здоровье: {current_hp}/{max_hp}\n"
                         f"Вы не можете охотиться до восстановления здоровья."
                     )
                 else:
@@ -2894,19 +2956,16 @@ async def titles_command(msg: Message):
         await msg.answer(text)
         return
     
-    # Пагинация: 6 титулов на страницу + кнопка "Следующая"
+    # ИСПРАВЛЕНИЕ 2: Пагинация: 3 титула на страницу
     page = 0
-    titles_per_page = 6
+    titles_per_page = 3
     total_pages = (len(available_titles) + titles_per_page - 1) // titles_per_page
-    
-    text = f"👑 Ваши титулы (текущий: {current_title})\n"
-    text += f"Страница {page + 1}/{total_pages}\n\n"
     
     await show_titles_page(msg.from_user.id, available_titles, current_title, page, total_pages, msg)
 
 async def show_titles_page(user_id: int, available_titles: list, current_title: str, page: int, total_pages: int, msg: Message):
     """Показать страницу с титулами"""
-    titles_per_page = 6
+    titles_per_page = 3
     start_idx = page * titles_per_page
     end_idx = start_idx + titles_per_page
     page_titles = available_titles[start_idx:end_idx]
@@ -2973,7 +3032,7 @@ async def titles_page_callback(call: CallbackQuery):
         await call.message.edit_text("👑 У вас пока нет титулов.")
         return
     
-    titles_per_page = 6
+    titles_per_page = 3
     total_pages = (len(available_titles) + titles_per_page - 1) // titles_per_page
     
     if page >= total_pages:
@@ -3016,7 +3075,7 @@ async def select_title_callback(call: CallbackQuery):
             })
     
     if available_titles:
-        titles_per_page = 6
+        titles_per_page = 3
         total_pages = (len(available_titles) + titles_per_page - 1) // titles_per_page
         
         if page >= total_pages:
@@ -3056,7 +3115,7 @@ async def remove_title_callback(call: CallbackQuery):
             })
     
     if available_titles:
-        titles_per_page = 6
+        titles_per_page = 3
         total_pages = (len(available_titles) + titles_per_page - 1) // titles_per_page
         page = 0
         await show_titles_page(call.from_user.id, available_titles, current_title, page, total_pages, call.message)
@@ -3865,6 +3924,7 @@ async def shop_survival(call: CallbackQuery):
     
     kb = InlineKeyboardMarkup(inline_keyboard=buttons)
     await call.message.edit_text(f"💰 Ваш баланс: {user[1]} монет\n\n🛡️ Выберите локацию для покупки предметов выживания:", reply_markup=kb)
+
 @dp.callback_query(lambda c: c.data.startswith("survival_location"))
 async def survival_location(call: CallbackQuery):
     data_parts = call.data.split(":")[1:]
@@ -3921,12 +3981,12 @@ async def survival_location(call: CallbackQuery):
 
 @dp.callback_query(lambda c: c.data.startswith("view_survival"))
 async def view_survival(call: CallbackQuery):
-    data_parts = call.data.split(":")
-    if len(data_parts) < 3:
+    data_parts = call.data.split(":")[1:]
+    if len(data_parts) < 2:
         await call.answer("❌ Ошибка данных", show_alert=True)
         return
     
-    user_id, item_name = data_parts[1:]
+    user_id, item_name = data_parts
     
     if int(user_id) != call.from_user.id:
         await call.answer("❌ Это не ваш магазин!", show_alert=True)
@@ -3972,12 +4032,12 @@ async def view_survival(call: CallbackQuery):
 
 @dp.callback_query(lambda c: c.data.startswith("buy_survival"))
 async def buy_survival(call: CallbackQuery):
-    data_parts = call.data.split(":")
-    if len(data_parts) < 3:
+    data_parts = call.data.split(":")[1:]
+    if len(data_parts) < 2:
         await call.answer("❌ Ошибка данных", show_alert=True)
         return
     
-    user_id, item_name = data_parts[1:]
+    user_id, item_name = data_parts
     
     if int(user_id) != call.from_user.id:
         await call.answer("❌ Это не ваша покупка!", show_alert=True)
@@ -4554,8 +4614,9 @@ async def main():
     print("🆕 НОВЫЕ ФУНКЦИИ И ИСПРАВЛЕНИЯ:")
     print("✅ Животные теперь добавляются в инвентарь при убийстве")
     print("✅ Награды (монеты и опыт) правильно начисляются")
-    print("✅ Меню титулов с пагинацией (максимум 7 кнопок на страницу)")
-    print("✅ Исправлена система здоровья: можно охотиться при любом HP > 0")
+    print("✅ Меню титулов с пагинацией (максимум 3 кнопки на страницу)")
+    print("✅ ИСПРАВЛЕНИЕ: Нельзя охотиться при HP ≤ 25")
+    print("✅ ИСПРАВЛЕНИЕ: Все баффы активируются только при покупке, не самопроизвольно")
     print("✅ Исправлены ошибки с животными: Бурый медведь, Белый медведь, Комодский варан")
     print("✅ Исправлена система выживания: урон ровно каждые 5 охот")
     print("✅ Привязаны правильные фразы атаки для каждого животного")
