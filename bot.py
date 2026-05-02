@@ -12,7 +12,7 @@ from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, C
 from aiogram.filters import Command
 
 # ================== НАСТРОЙКИ ==================
-TOKEN = "8537764396:AAEZFTs7mgHqTjQbDh6eSyKtQJvwlPnJazY"
+TOKEN = "8537764396:AAFG7X-ztoMpRtjv7b3TDP8o_6q0tDlNxsw"
 HUNT_COOLDOWN = 180  # 3 минуты
 EXP_PER_LEVEL = 500
 ADMIN_ID = 6924481166  # Ваш ID
