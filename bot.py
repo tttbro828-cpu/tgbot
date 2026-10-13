@@ -85,7 +85,7 @@ def safe_fetchall(query, params=()):
 # ВСЕ вызовы fetchone() замени на safe_fetchon
 
 # ================== НАСТРОЙКИ ==================
-TOKEN = "8537764396:AAFG7X-ztoMpRtjv7b3TDP8o_6q0tDlNxsw"
+TOKEN = "8537764396:AAE6KgOI5b1OwadXPCRyN_pWnQMSpxGXHY8"
 HUNT_COOLDOWN = 180  # 3 минуты
 EXP_PER_LEVEL = 500
 ADMIN_ID = 6924481166  # Ваш ID
